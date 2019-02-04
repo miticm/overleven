@@ -22,16 +22,22 @@ let controls;
 
 function preload ()
 {
-    this.load.image('logo', 'assets/logo.png');
     this.load.image('grass', 'assets/grass.png')
     this.load.spritesheet('player', 'assets/player_sheet.png', {
         frameWidth: 32,
         frameHeight: 32
     });
+    this.load.image('bullet', 'assets/bullet.png');
 }
 
 function create ()
 {
+    const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
+    const SetToAngle = Phaser.Geom.Line.SetToAngle;
+    const velocityFromRotation = this.physics.velocityFromRotation;
+    const velocity = new Phaser.Math.Vector2();
+    const line = new Phaser.Geom.Line();
+
     const grass = this.add.image(400, 300, 'grass');
     player = this.physics.add.sprite(20, 20, 'player');
 
@@ -39,6 +45,18 @@ function create ()
     player.setCollideWorldBounds(true);
 
     controls = this.input.keyboard.createCursorKeys();
+
+    this.input.on('pointermove', function (pointer) {
+        const angle = BetweenPoints(player, pointer);
+        SetToAngle(line, player.x, player.y, angle, 128);
+        velocityFromRotation(angle, 600, velocity);
+    }, this);
+
+    this.input.on('pointerup', function () {
+        // Enable physics body and reset (at position), activate game object, show game object
+        const bullet = this.physics.add.sprite(player.x, player.y, 'bullet');
+        bullet.enableBody(true, player.x, player.y, true, true).setVelocity(velocity.x, velocity.y);
+    }, this);
 }
 
 function update() {
