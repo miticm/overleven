@@ -20,6 +20,8 @@ let game = new Phaser.Game(config);
 let player;
 let controls;
 
+let cooldown = 0;
+
 function preload ()
 {
     this.load.image('grass', 'assets/grass.png')
@@ -53,9 +55,11 @@ function create ()
     }, this);
 
     this.input.on('pointerup', function () {
-        // Enable physics body and reset (at position), activate game object, show game object
-        const bullet = this.physics.add.sprite(player.x, player.y, 'bullet');
-        bullet.enableBody(true, player.x, player.y, true, true).setVelocity(velocity.x, velocity.y);
+        if (cooldown <= 0) {
+            const bullet = this.physics.add.sprite(player.x, player.y, 'bullet');
+            bullet.enableBody(true, player.x, player.y, true, true).setVelocity(velocity.x, velocity.y);
+            cooldown = 20;
+        }
     }, this);
 }
 
@@ -75,4 +79,6 @@ function update() {
     } else {
         player.setVelocityY(0);
     }
+
+    cooldown -= 1;
 }
