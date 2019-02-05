@@ -24,7 +24,8 @@ let cooldown = 0;
 
 function preload ()
 {
-    this.load.image('grass', 'assets/grass.png')
+    this.load.image('grass', 'assets/grass.png');
+    this.load.image('stone', 'assets/stone.jpeg');
     this.load.spritesheet('player', 'assets/player_sheet.png', {
         frameWidth: 32,
         frameHeight: 32
@@ -43,6 +44,11 @@ function create ()
     const grass = this.add.image(400, 300, 'grass');
     player = this.physics.add.sprite(20, 20, 'player');
 
+    const stones = this.physics.add.staticGroup();
+    stones.create(200, 200, 'stone').setScale(1);
+
+    this.physics.add.collider(player, stones);
+
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
@@ -59,6 +65,7 @@ function create ()
             const bullet = this.physics.add.sprite(player.x, player.y, 'bullet');
             bullet.enableBody(true, player.x, player.y, true, true).setVelocity(velocity.x, velocity.y);
             cooldown = 20;
+            this.physics.add.overlap(bullet, stones, breakGround, null, this);
         }
     }, this);
 }
@@ -81,4 +88,9 @@ function update() {
     }
 
     cooldown -= 1;
+}
+
+function breakGround(bullet, stone) {
+    bullet.disableBody(true, true);
+    stone.disableBody(true, true);
 }
