@@ -1,5 +1,7 @@
 import 'phaser';
+import { enemyMovement } from './enemy-ai.js';
 
+// Config and set up the game, in general don't mess with
 var config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
@@ -14,16 +16,20 @@ var config = {
         default: 'arcade'
     }
 };
-
 let game = new Phaser.Game(config);
 
+// Declare variables
+// Player related variables
 let player;
 let controls;
-
 let cooldown = 0;
+let playerSpeed = 140;
 
-function preload ()
-{
+// Enemy related variables
+let enemies = [];
+
+// Function is ran before load, basically loads in all assets
+function preload() {
     this.load.image('grass', 'assets/grass.png');
     this.load.image('stone', 'assets/stone.jpeg');
     this.load.spritesheet('player', 'assets/player_sheet.png', {
@@ -31,10 +37,11 @@ function preload ()
         frameHeight: 32
     });
     this.load.image('bullet', 'assets/bullet.png');
+    this.load.image('enemy', 'assets/enemy.jpg');
 }
 
-function create ()
-{
+// Function is ran at start of game, initialize all sprites and math
+function create() {
     const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
     const SetToAngle = Phaser.Geom.Line.SetToAngle;
     const velocityFromRotation = this.physics.velocityFromRotation;
@@ -46,6 +53,9 @@ function create ()
 
     const stones = this.physics.add.staticGroup();
     stones.create(200, 200, 'stone').setScale(1);
+
+    const enemy = this.physics.add.sprite(300, 300, 'enemy');
+    enemies.push(enemy);
 
     this.physics.add.collider(player, stones);
 
@@ -70,26 +80,40 @@ function create ()
     }, this);
 }
 
+// Function is ran every frame to update the game
 function update() {
+    playerMove();
+    cooldown -= 1;
+    moveEnemies();
+}
+
+// Moves the player
+function playerMove() {
     if (controls.left.isDown) {
-        player.setVelocityX(-160);
+        player.setVelocityX(-playerSpeed);
     } else if (controls.right.isDown) {
-        player.setVelocityX(160);
+        player.setVelocityX(playerSpeed);
     } else {
         player.setVelocityX(0);
     }
 
     if (controls.up.isDown) {
-        player.setVelocityY(-160);
+        player.setVelocityY(-playerSpeed);
     } else if (controls.down.isDown) {
-        player.setVelocityY(160);
+        player.setVelocityY(playerSpeed);
     } else {
         player.setVelocityY(0);
     }
-
-    cooldown -= 1;
 }
 
+// Moves enemies
+function moveEnemies() {
+    enemies.forEach(function(enemy) {
+        enemyMovement(enemy, player);
+    });
+}
+
+// Collision bullet --> ground
 function breakGround(bullet, stone) {
     bullet.disableBody(true, true);
     stone.disableBody(true, true);
