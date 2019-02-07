@@ -126,7 +126,7 @@ function playerMove() {
 // Moves enemies
 function moveEnemies() {
     enemies.forEach(function(enemy) {
-        enemyMovement(enemy, player);
+        enemyMovement(enemy, player, terrainMatrix);
     });
 }
 

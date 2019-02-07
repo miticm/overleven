@@ -10,6 +10,18 @@ export function enemyMovement(enemy, player, terrainMatrix) {
     const dest = currentBlock(player.x, player.y);
 
     // Recalculate path to player
+    const visited = new Array(terrainMatrix.length);
+    for (let i = 0; i < terrainMatrix.length; i++) {
+        visited[i] = new Array(terrainMatrix[i].length);
+    }
+    const queue = new Array(); // shift --> dequeue, push --> enqueue
+    queue.push(coord);
+
+    let currentCoord;
+    while((currentCoord = queue.shift()) !== undefined) {
+        
+    }
+    
 
     // Move on path
     if (enemy.x < player.x) {
