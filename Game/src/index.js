@@ -39,13 +39,8 @@ let playerSpeed = 140;
 // Enemy related variables
 let enemies = [];
 let terrainMatrix;
-<<<<<<< HEAD
 let waveCount = 0;
-let enemieDestinations = [ ];
-
-=======
 let enemieDestinations = [];
->>>>>>> drop and pick up items
 
 // Function is ran before load, basically loads in all assets
 function preload() {
@@ -60,62 +55,6 @@ function preload() {
 
 // Function is ran at start of game, initialize all sprites and math
 function create() {
-<<<<<<< HEAD
-
-    // Calculations for shooting angle
-    const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
-    const SetToAngle = Phaser.Geom.Line.SetToAngle;
-    const velocityFromRotation = this.physics.velocityFromRotation;
-    const velocity = new Phaser.Math.Vector2();
-    const line = new Phaser.Geom.Line();
-
-    // Add background
-    const grass = this.add.image(400, 300, 'grass');
-
-    // Add player
-    player = this.physics.add.sprite(24, 24, 'player');
-    player.setBounce(0.1);
-    player.setCollideWorldBounds(true);
-
-    // Populate terrain matrix for AI
-    initTerrainMatrix();
-
-    // Add grounds
-    const grounds = this.physics.add.staticGroup();
-    
-    addBlock.call(this, grounds, 9, 9);
-    addBlock.call(this, grounds, 9, 10);
-    addBlock.call(this, grounds, 10, 9);
-    addBlock.call(this, grounds, 10, 10);
-    this.physics.add.collider(player, grounds);
-
-    // Add enemy
-    const enemy = addEnemy.call(this, 300, 300);
-    this.physics.add.collider(enemy, grounds);
-
-    const enemy2 = addEnemy.call(this, 100, 100);
-    this.physics.add.collider(enemy2, grounds);
-    this.physics.add.collider(enemy2, enemy);
-
-    // Controls
-    controls = this.input.keyboard.createCursorKeys();
-    this.input.on('pointermove', function (pointer) {
-        const angle = BetweenPoints(player, pointer);
-        SetToAngle(line, player.x, player.y, angle, 128);
-        velocityFromRotation(angle, 600, velocity);
-    }, this);
-    this.input.on('pointerup', function () {
-        if (cooldown <= 0) {
-            const bullet = this.physics.add.sprite(player.x, player.y, 'bullet');
-            bullet.enableBody(true, player.x, player.y, true, true).setVelocity(velocity.x, velocity.y);
-            cooldown = 20;
-            this.physics.add.overlap(bullet, grounds, breakGround, null, this);
-            for (let i = 0; i < enemies.length; i++) {
-                this.physics.add.overlap(bullet, enemies[i].enemy, hitEnemy, null, this);
-            }
-        }
-    }, this);
-=======
   // Calculations for shooting angle
   const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
   const SetToAngle = Phaser.Geom.Line.SetToAngle;
@@ -145,10 +84,12 @@ function create() {
   this.physics.add.collider(player, grounds);
 
   // Add enemy
-  const enemy = this.physics.add.sprite(300, 300, "enemy");
-  enemies.push(enemy);
+  const enemy = addEnemy.call(this, 300, 300);
   this.physics.add.collider(enemy, grounds);
-  enemy.setCollideWorldBounds(true);
+
+  const enemy2 = addEnemy.call(this, 100, 100);
+  this.physics.add.collider(enemy2, grounds);
+  this.physics.add.collider(enemy2, enemy);
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
@@ -171,11 +112,19 @@ function create() {
           .setVelocity(velocity.x, velocity.y);
         cooldown = 20;
         this.physics.add.overlap(bullet, grounds, breakGround, null, this);
+        for (let i = 0; i < enemies.length; i++) {
+          this.physics.add.overlap(
+            bullet,
+            enemies[i].enemy,
+            hitEnemy,
+            null,
+            this
+          );
+        }
       }
     },
     this
   );
->>>>>>> drop and pick up items
 }
 
 // Function is ran every frame to update the game
@@ -209,15 +158,9 @@ function playerMove() {
 
 // Moves enemies
 function moveEnemies() {
-<<<<<<< HEAD
-    enemies.forEach(function(enemy) {
-        enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
-    });
-=======
   enemies.forEach(function(enemy) {
-    enemyMovement(enemy, player, terrainMatrix);
+    enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
   });
->>>>>>> drop and pick up items
 }
 
 // Collision bullet --> ground
@@ -281,36 +224,30 @@ function initTerrainMatrix() {
 
 // Adds a block in the game and into the matrix for AI pathing
 function addBlock(group, x, y) {
-<<<<<<< HEAD
-    group.create(x * BLOCK_SIZE + 8, y * BLOCK_SIZE + 8, 'ground');
-    terrainMatrix[x][y] = true;
-}
-
-function hitEnemy(bullet, enemy) {
-    bullet.disableBody(true, true);
-    console.log(bullet);
-    const found = enemies.find(function(e) {
-        return e.enemy == enemy;
-    });
-    console.log(found);
-    found.hp -= 1;
-    if (found.hp <= 0) {
-        enemy.disableBody(true, true);
-    }
-}
-
-function addEnemy(x, y) {
-    const enemy = this.physics.add.sprite(x, y, 'enemy');
-    console.log(enemy);
-    enemies.push({
-        enemy: enemy,
-        hp: 2,
-        speed: 50
-    });
-    return enemy;
-}
-=======
   group.create(x * BLOCK_SIZE + 8, y * BLOCK_SIZE + 8, "ground");
   terrainMatrix[x][y] = true;
 }
->>>>>>> drop and pick up items
+
+function hitEnemy(bullet, enemy) {
+  bullet.disableBody(true, true);
+  console.log(bullet);
+  const found = enemies.find(function(e) {
+    return e.enemy == enemy;
+  });
+  console.log(found);
+  found.hp -= 1;
+  if (found.hp <= 0) {
+    enemy.disableBody(true, true);
+  }
+}
+
+function addEnemy(x, y) {
+  const enemy = this.physics.add.sprite(x, y, "enemy");
+  console.log(enemy);
+  enemies.push({
+    enemy: enemy,
+    hp: 2,
+    speed: 50
+  });
+  return enemy;
+}
