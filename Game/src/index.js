@@ -25,10 +25,10 @@ let cooldown = 0;
 function preload ()
 {
     this.load.image('grass', 'assets/grass.png');
-    this.load.image('stone', 'assets/sml_rock.png');
-    this.load.spritesheet('player', 'assets/wiz_walk_down.png', {
-        frameWidth: 16,
-        frameHeight: 16
+    this.load.image('stone', 'assets/sml_rock64.png');
+    this.load.spritesheet('player', 'assets/wizard64.png', {
+        frameWidth: 64,
+        frameHeight: 64
     });
     this.load.image('bullet', 'assets/bullet.png');
 }
@@ -54,12 +54,38 @@ function create ()
 
     // player animations
     this.anims.create({
+        key: 'idle',
+        frames: [ { key: 'dude', frame: 0 } ],
+        frameRate: 0
+    });
+
+    this.anims.create({
         key: 'down',
-        frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
-        frameRate: 3,
+        frames: this.anims.generateFrameNumbers('player', { start: 1, end: 2 }),
+        frameRate: 5,
         repeat: -1
     });
 
+    this.anims.create({
+        key: 'up',
+        frames: this.anims.generateFrameNumbers('player', { start: 7, end: 8 }),
+        frameRate: 5,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'left',
+        frames: this.anims.generateFrameNumbers('player', { start: 3, end: 4 }),
+        frameRate: 5,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('player', { start: 5, end: 6 }),
+        frameRate: 5,
+        repeat: -1
+    });
 
     controls = this.input.keyboard.createCursorKeys();
 
@@ -85,14 +111,14 @@ function update() {
         player.anims.play('left', true);
     } else if (controls.right.isDown) {
         player.setVelocityX(160);
-        player.anims.play('left', true);
+        player.anims.play('right', true);
     } else {
         player.setVelocityX(0);
     }
 
     if (controls.up.isDown) {
         player.setVelocityY(-160);
-        player.anims.play('left', true);
+        player.anims.play('up', true);
     } else if (controls.down.isDown) {
         player.setVelocityY(160);
         player.anims.play('down', true);
