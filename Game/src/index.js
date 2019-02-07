@@ -1,6 +1,6 @@
 import 'phaser';
 import { enemyMovement } from './enemy-ai.js';
-import { HEIGHT, WIDTH, BLOCK_SIZE } from './constants.js';
+import { HEIGHT, WIDTH, BLOCK_SIZE, BLOCK_WIDTH, BLOCK_HEIGHT } from './constants.js';
 import { currentBlock } from './generic-functions.js';
 
 // Config and set up the game, in general don't mess with
@@ -28,9 +28,9 @@ let cooldown = 0;
 let playerSpeed = 140;
 
 // Enemy related variables
-let enemies = [];
+let enemies = [ ];
 let terrainMatrix;
-let enemieDestinations = [];
+let enemieDestinations = [ ];
 
 
 // Function is ran before load, basically loads in all assets
@@ -56,7 +56,7 @@ function create() {
     const grass = this.add.image(400, 300, 'grass');
 
     // Add player
-    player = this.physics.add.sprite(20, 20, 'player');
+    player = this.physics.add.sprite(24, 24, 'player');
     player.setBounce(0.1);
     player.setCollideWorldBounds(true);
 
@@ -76,6 +76,7 @@ function create() {
     const enemy = this.physics.add.sprite(300, 300, 'enemy');
     enemies.push(enemy);
     this.physics.add.collider(enemy, grounds);
+    enemy.setCollideWorldBounds(true);
 
     // Controls
     controls = this.input.keyboard.createCursorKeys();
@@ -136,13 +137,12 @@ function breakGround(bullet, ground) {
     ground.disableBody(true, true);
     const coord = currentBlock(ground.x, ground.y);
     terrainMatrix[coord.x][coord.y] = false;
-    console.log(terrainMatrix);
 }
 
 // Initializes the terrain matrix for AI pathing
 function initTerrainMatrix() {
-    const outer = HEIGHT / BLOCK_SIZE;
-    const inner = WIDTH / BLOCK_SIZE;
+    const outer = BLOCK_HEIGHT;
+    const inner = BLOCK_WIDTH;
     terrainMatrix = new Array(outer);
     for (let i = 0; i < outer; i++) {
         terrainMatrix[i] = new Array(inner);
