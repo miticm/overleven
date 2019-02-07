@@ -25,10 +25,10 @@ let cooldown = 0;
 function preload ()
 {
     this.load.image('grass', 'assets/grass.png');
-    this.load.image('stone', 'assets/stone.jpeg');
-    this.load.spritesheet('player', 'assets/player_sheet.png', {
-        frameWidth: 32,
-        frameHeight: 32
+    this.load.image('stone', 'assets/sml_rock.png');
+    this.load.spritesheet('player', 'assets/wiz_walk_down.png', {
+        frameWidth: 16,
+        frameHeight: 16
     });
     this.load.image('bullet', 'assets/bullet.png');
 }
@@ -52,6 +52,15 @@ function create ()
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
+    // player animations
+    this.anims.create({
+        key: 'down',
+        frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
+        frameRate: 3,
+        repeat: -1
+    });
+
+
     controls = this.input.keyboard.createCursorKeys();
 
     this.input.on('pointermove', function (pointer) {
@@ -73,16 +82,20 @@ function create ()
 function update() {
     if (controls.left.isDown) {
         player.setVelocityX(-160);
+        player.anims.play('left', true);
     } else if (controls.right.isDown) {
         player.setVelocityX(160);
+        player.anims.play('left', true);
     } else {
         player.setVelocityX(0);
     }
 
     if (controls.up.isDown) {
         player.setVelocityY(-160);
+        player.anims.play('left', true);
     } else if (controls.down.isDown) {
         player.setVelocityY(160);
+        player.anims.play('down', true);
     } else {
         player.setVelocityY(0);
     }
