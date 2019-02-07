@@ -2,17 +2,11 @@
 import { currentBlock } from './generic-functions.js';
 import { BLOCK_SIZE, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, HALF_BLOCK } from './constants.js';
 
-// Internal enemy variables
-const speed = 50;
-
-export function enemyMovement(enemy, player, terrainMatrix) {
-
+export function enemyMovement(enemy, player, terrainMatrix, speed) {
     const coord = currentBlock(enemy.x, enemy.y);
     const originalCoord = currentBlock(enemy.x, enemy.y);
     const dest = currentBlock(player.x, player.y);
     let finalDest = dest;
-
-    // console.log(coord);
 
     // Recalculate path to player
     const visited = { };
@@ -54,17 +48,32 @@ export function enemyMovement(enemy, player, terrainMatrix) {
     }
 
     // Move towards next block in
-    if (enemy.x < (finalDest.x * BLOCK_SIZE) + HALF_BLOCK && (finalDest.x * BLOCK_SIZE) + HALF_BLOCK <= HEIGHT) {
-        enemy.setVelocityX(speed);
-    } else if (enemy.x > (finalDest.x * BLOCK_SIZE) + HALF_BLOCK && (finalDest.x * BLOCK_SIZE) + HALF_BLOCK >= 0) {
-        enemy.setVelocityX(-speed);
+    if (finalDest.x == dest.x && finalDest.y == dest.y) {
+        if (enemy.x < player.x) {
+            enemy.setVelocityX(speed);
+        } else if (enemy.x > player.x) {
+            enemy.setVelocityX(-speed);
+        }
+
+        if (enemy.y < player.y) {
+            enemy.setVelocityY(speed);
+        } else if (enemy.y > player.y) {
+            enemy.setVelocityY(-speed);
+        }
+    } else {
+        if (enemy.x < (finalDest.x * BLOCK_SIZE) + HALF_BLOCK && (finalDest.x * BLOCK_SIZE) + HALF_BLOCK <= HEIGHT) {
+            enemy.setVelocityX(speed);
+        } else if (enemy.x > (finalDest.x * BLOCK_SIZE) + HALF_BLOCK && (finalDest.x * BLOCK_SIZE) + HALF_BLOCK >= 0) {
+            enemy.setVelocityX(-speed);
+        }
+
+        if (enemy.y < (finalDest.y * BLOCK_SIZE) + HALF_BLOCK && (finalDest.y * BLOCK_SIZE) + HALF_BLOCK <= WIDTH) {
+            enemy.setVelocityY(speed);
+        } else if (enemy.y > (finalDest.y * BLOCK_SIZE) + HALF_BLOCK && (finalDest.y * BLOCK_SIZE) + HALF_BLOCK >= 0) {
+            enemy.setVelocityY(-speed);
+        }
     }
 
-    if (enemy.y < (finalDest.y * BLOCK_SIZE) + HALF_BLOCK && (finalDest.y * BLOCK_SIZE) + HALF_BLOCK <= WIDTH) {
-        enemy.setVelocityY(speed);
-    } else if (enemy.y > (finalDest.y * BLOCK_SIZE) + HALF_BLOCK && (finalDest.y * BLOCK_SIZE) + HALF_BLOCK >= 0) {
-        enemy.setVelocityY(-speed);
-    }
 }
 
 function enumerateNeighbors(currentCoord, visited, terrainMatrix) {

@@ -30,6 +30,7 @@ let playerSpeed = 140;
 // Enemy related variables
 let enemies = [ ];
 let terrainMatrix;
+let waveCount = 0;
 let enemieDestinations = [ ];
 
 
@@ -73,10 +74,12 @@ function create() {
     this.physics.add.collider(player, grounds);
 
     // Add enemy
-    const enemy = this.physics.add.sprite(300, 300, 'enemy');
-    enemies.push(enemy);
+    const enemy = addEnemy.call(this, 300, 300);
     this.physics.add.collider(enemy, grounds);
-    enemy.setCollideWorldBounds(true);
+
+    const enemy2 = addEnemy.call(this, 100, 100);
+    this.physics.add.collider(enemy2, grounds);
+    this.physics.add.collider(enemy2, enemy);
 
     // Controls
     controls = this.input.keyboard.createCursorKeys();
@@ -91,6 +94,9 @@ function create() {
             bullet.enableBody(true, player.x, player.y, true, true).setVelocity(velocity.x, velocity.y);
             cooldown = 20;
             this.physics.add.overlap(bullet, grounds, breakGround, null, this);
+            for (let i = 0; i < enemies.length; i++) {
+                this.physics.add.overlap(bullet, enemies[i].enemy, hitEnemy, null, this);
+            }
         }
     }, this);
 }
@@ -127,7 +133,7 @@ function playerMove() {
 // Moves enemies
 function moveEnemies() {
     enemies.forEach(function(enemy) {
-        enemyMovement(enemy, player, terrainMatrix);
+        enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
     });
 }
 
@@ -153,4 +159,28 @@ function initTerrainMatrix() {
 function addBlock(group, x, y) {
     group.create(x * BLOCK_SIZE + 8, y * BLOCK_SIZE + 8, 'ground');
     terrainMatrix[x][y] = true;
+}
+
+function hitEnemy(bullet, enemy) {
+    bullet.disableBody(true, true);
+    console.log(bullet);
+    const found = enemies.find(function(e) {
+        return e.enemy == enemy;
+    });
+    console.log(found);
+    found.hp -= 1;
+    if (found.hp <= 0) {
+        enemy.disableBody(true, true);
+    }
+}
+
+function addEnemy(x, y) {
+    const enemy = this.physics.add.sprite(x, y, 'enemy');
+    console.log(enemy);
+    enemies.push({
+        enemy: enemy,
+        hp: 2,
+        speed: 50
+    });
+    return enemy;
 }
