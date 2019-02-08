@@ -9,9 +9,6 @@ var MenuScene = new Phaser.Class({
     function MenuScene(){
         Phaser.Scene.call(this, { key: 'MenuScene' });
         window.GAME = this;
-        this.player;
-        this.controls;
-        this.cooldown = 0;
     },
     
     preload: function(){
@@ -45,7 +42,6 @@ var MenuScene = new Phaser.Class({
             this.scene.add("PlayScene", playScene);
             this.scene.start("PlayScene");;
             //go to next scene
-            console.log("pressed");
         })
 
         let leaderboardButton = this.add.sprite(this.game.renderer.width / 2, this.game.renderer.height / 2 + 130, "leaderboard_button").setDepth(1);
