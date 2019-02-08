@@ -9,24 +9,219 @@ import {
 } from "./constants.js";
 import { currentBlock, getRandomInt } from "./generic-functions.js";
 
+const preloader = new Phaser.Class({
+  Extends: Phaser.Scene,
+  initialize: function Preloader() {
+    Phaser.Scene.call(this, { key: "preloader" });
+  },
+  preload: preload,
+
+  create: function() {
+    this.scene.start("MenuScene");
+  }
+});
+
+const MenuScene = new Phaser.Class({
+  Extends: Phaser.Scene,
+
+  initialize: function MenuScene() {
+    Phaser.Scene.call(this, { key: "MenuScene" });
+    window.GAME = this;
+  },
+
+  preload: function() {
+    this.load.image("menu_background", "assets/background.jpg");
+    this.load.image("play_button", "assets/play_button.png");
+    this.load.image("leaderboard_button", "assets/leaderboard_button.png");
+    this.load.image("game_title", "assets/game_title.png");
+  },
+
+  create: function() {
+    let background = this.add.sprite(0, 0, "menu_background");
+    background.setScale(1.7, 1.7);
+    background.setOrigin(0, 0);
+
+    this.add
+      .sprite(
+        this.game.renderer.width / 2,
+        this.game.renderer.height / 2 - 100,
+        "game_title"
+      )
+      .setDepth(1);
+
+    let playButton = this.add
+      .sprite(
+        this.game.renderer.width / 2,
+        this.game.renderer.height / 2 + 50,
+        "play_button"
+      )
+      .setDepth(1);
+    playButton.setInteractive();
+
+    playButton.on("pointerover", () => {
+      //make play button bloom
+      playButton.setScale(1.5, 1.5);
+    });
+
+    playButton.on("pointerout", () => {
+      //reset button bloom
+      playButton.setScale(1, 1);
+    });
+
+    playButton.on("pointerup", () => {
+      this.scene.start("game");
+      //go to next scene
+    });
+
+    let leaderboardButton = this.add
+      .sprite(
+        this.game.renderer.width / 2,
+        this.game.renderer.height / 2 + 130,
+        "leaderboard_button"
+      )
+      .setDepth(1);
+    leaderboardButton.setInteractive();
+
+    leaderboardButton.on("pointerover", () => {
+      //make button bloom
+      leaderboardButton.setScale(1.5, 1.5);
+    });
+
+    leaderboardButton.on("pointerout", () => {
+      //reset button bloom
+      leaderboardButton.setScale(1, 1);
+    });
+
+    leaderboardButton.on("pointerup", () => {
+      //go to leaderboard page
+    });
+  }
+});
+
+const win = new Phaser.Class({
+  Extends: Phaser.Scene,
+  initialize: function win() {
+    Phaser.Scene.call(this, { key: "win" });
+  },
+
+  create: function() {
+    const text = this.add.text(WIDTH / 2, HEIGHT / 2, "You win!", {
+      fontSize: "32px"
+    });
+
+    this.input.once(
+      "pointerup",
+      function(event) {
+        this.scene.start("game");
+        enemies = [];
+        terrainMatrix = undefined;
+      },
+      this
+    );
+  }
+});
+
+const game = new Phaser.Class({
+  Extends: Phaser.Scene,
+  initialize: function Game() {
+    Phaser.Scene.call(this, { key: "game" });
+    window.GAME = this;
+
+    this.controls;
+    this.track;
+    this.text;
+  },
+
+  preload: preload,
+  create: create,
+  update: update
+});
+
+const lose = new Phaser.Class({
+  Extends: Phaser.Scene,
+  initialize: function lose() {
+    Phaser.Scene.call(this, { key: "lose" });
+  },
+
+  preload: function() {
+    this.load.image("menu_button", "assets/menu_button.png");
+    this.load.image("retry_button", "assets/retry_button.png");
+  },
+
+  create: function() {
+    const text = this.add.text(WIDTH / 2, HEIGHT / 2, "You lose...", {
+      fontSize: "32px"
+    });
+    let menuButton = this.add
+      .sprite(
+        this.game.renderer.width - 150,
+        this.game.renderer.height - 100,
+        "menu_button"
+      )
+      .setDepth(1);
+    menuButton.setScale(0.2, 0.2);
+    menuButton.setInteractive();
+
+    menuButton.on("pointerover", () => {
+      //make play button bloom
+      menuButton.setScale(0.3, 0.3);
+    });
+    menuButton.on("pointerout", () => {
+      //reset button bloom
+      menuButton.setScale(0.2, 0.2);
+    });
+
+    menuButton.on("pointerup", () => {
+      this.scene.start("MenuScene");
+      enemies = [];
+      terrainMatrix = undefined;
+      //go to next scene
+    });
+    let retryButton = this.add
+      .sprite(
+        this.game.renderer.width - 725,
+        this.game.renderer.height - 100,
+        "retry_button"
+      )
+      .setDepth(1);
+    retryButton.setScale(0.15, 0.15);
+    retryButton.setInteractive();
+
+    retryButton.on("pointerover", () => {
+      //make play button bloom
+      retryButton.setScale(0.25, 0.25);
+    });
+    retryButton.on("pointerout", () => {
+      //reset button bloom
+      retryButton.setScale(0.15, 0.15);
+    });
+
+    retryButton.on(
+      "pointerup",
+      function(event) {
+        this.scene.start("game");
+        enemies = [];
+        terrainMatrix = undefined;
+      },
+      this
+    );
+  }
+});
+
 // Config and set up the game, in general don't mess with
 var config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
   width: WIDTH,
   height: HEIGHT,
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  },
+  scene: [preloader, MenuScene, game, win, lose],
   physics: {
     default: "arcade"
   }
 };
 
 // game variables
-let game = new Phaser.Game(config);
+let start = new Phaser.Game(config);
 let Scene;
 
 // Declare variables
@@ -45,23 +240,32 @@ let wCooldown = 0;
 let eCooldown = 0;
 let rCooldown = 0;
 let playerSpeed = 140;
+let inv = 30;
+let hp = 3;
 
 // Enemy related variables
 let enemies = [];
 let terrainMatrix;
+let enemyCount = 2;
 let waveCount = 0;
-let enemieDestinations = [];
 
 // Function is ran before load, basically loads in all assets
 function preload() {
   this.load.image("grass", "assets/grass.png");
-  this.load.image("ground", "assets/ground.png");
-  this.load.image("player", "assets/player.png");
+  this.load.image("ground", "assets/sml_rock64.png");
   this.load.image("bullet", "assets/bullet.png");
-  this.load.image("enemy", "assets/enemy.png");
+  this.load.spritesheet("enemy", "assets/slime64.png", {
+    frameWidth: 64,
+    frameHeight: 64
+  });
   this.load.image("boot", "assets/boot.png");
   this.load.image("firstaid", "assets/firstaid.png");
   //this.load.image("Q", "assets/qability.png");
+  this.load.image("potion", "assets/potion.png");
+  this.load.spritesheet("player", "assets/wizard64.png", {
+    frameWidth: 64,
+    frameHeight: 64
+  });
 }
 
 // Function is ran at start of game, initialize all sprites and math
@@ -78,9 +282,55 @@ function create() {
   const grass = this.add.image(400, 300, "grass");
 
   // Add player
-  player = this.physics.add.sprite(24, 24, "player");
+  player = this.physics.add.sprite(
+    this.game.renderer.width / 2,
+    this.game.renderer.height / 2,
+    "player"
+  );
   player.setBounce(0.1);
   player.setCollideWorldBounds(true);
+
+  // player animations
+  this.anims.create({
+    key: "idle",
+    frames: [{ key: "player", frame: 0 }],
+    frameRate: 0
+  });
+
+  this.anims.create({
+    key: "down",
+    frames: this.anims.generateFrameNumbers("player", { start: 1, end: 2 }),
+    frameRate: 5,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: "up",
+    frames: this.anims.generateFrameNumbers("player", { start: 7, end: 8 }),
+    frameRate: 5,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: "left",
+    frames: this.anims.generateFrameNumbers("player", { start: 3, end: 4 }),
+    frameRate: 5,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: "right",
+    frames: this.anims.generateFrameNumbers("player", { start: 5, end: 6 }),
+    frameRate: 5,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: "enemy",
+    frames: this.anims.generateFrameNumbers("enemy", { start: 0, end: 1 }),
+    frameRate: 4,
+    repeat: -1
+  });
 
   // Populate terrain matrix for AI
   initTerrainMatrix();
@@ -88,19 +338,19 @@ function create() {
   // Add grounds
   const grounds = this.physics.add.staticGroup();
 
-  addBlock.call(this, grounds, 9, 9);
-  addBlock.call(this, grounds, 9, 10);
-  addBlock.call(this, grounds, 10, 9);
-  addBlock.call(this, grounds, 10, 10);
+  addBlock.call(this, grounds, 2, 2);
+  addBlock.call(this, grounds, 2, 3);
   this.physics.add.collider(player, grounds);
 
   // Add enemy
-  const enemy = addEnemy.call(this, 300, 300);
-  this.physics.add.collider(enemy, grounds);
+  const enemy = addEnemy.call(this, 64, 64);
+  // this.physics.add.collider(enemy, grounds);
+  this.physics.add.overlap(player, enemy, hitPlayer, null, this);
 
-  const enemy2 = addEnemy.call(this, 100, 100);
-  this.physics.add.collider(enemy2, grounds);
-  this.physics.add.collider(enemy2, enemy);
+  // const enemy2 = addEnemy.call(this, 100, 100);
+  // this.physics.add.collider(enemy2, grounds);
+  // this.physics.add.collider(enemy2, enemy);
+  // this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
@@ -214,7 +464,7 @@ function update() {
   rCooldown -= 1;
   qActive -= 1;
   rActive -= 1;
-
+  inv -= 1;
   moveEnemies();
   // this.cameras.main.centerOn(player.x, player.y);
 }
@@ -229,8 +479,10 @@ function playerMove() {
   // Left/right
   if (controls.left.isDown) {
     player.setVelocityX(-playerSpeed);
+    player.anims.play("left", true);
   } else if (controls.right.isDown) {
     player.setVelocityX(playerSpeed);
+    player.anims.play("right", true);
   } else {
     player.setVelocityX(0);
   }
@@ -238,8 +490,10 @@ function playerMove() {
   // Down/up
   if (controls.up.isDown) {
     player.setVelocityY(-playerSpeed);
+    player.anims.play("up", true);
   } else if (controls.down.isDown) {
     player.setVelocityY(playerSpeed);
+    player.anims.play("down", true);
   } else {
     player.setVelocityY(0);
   }
@@ -284,7 +538,7 @@ function generateItems() {
       item = Scene.physics.add.staticImage(
         getRandomInt(WIDTH),
         getRandomInt(HEIGHT),
-        "firstaid"
+        "potion"
       );
       break;
   }
@@ -334,6 +588,20 @@ function hitEnemy(bullet, enemy) {
   found.hp -= 1;
   if (found.hp <= 0) {
     enemy.disableBody(true, true);
+    enemyCount -= 1;
+    if (enemyCount == 0) {
+      this.scene.start("win");
+    }
+  }
+}
+
+function hitPlayer(player, enemy) {
+  if (inv <= 0) {
+    hp -= 1;
+    if (hp <= 0) {
+      this.scene.start("lose");
+    }
+    inv = 30;
   }
 }
 
@@ -345,5 +613,6 @@ function addEnemy(x, y) {
     hp: 2,
     speed: 50
   });
+  enemy.anims.play("enemy", true);
   return enemy;
 }
