@@ -25,7 +25,7 @@ game.scene.start("MenuScene");
 
 // Declare variables
 // Player related variables
-/*let player;
+let player;
 let controls;
 let cooldown = 0;
 let playerSpeed = 140;
@@ -186,4 +186,4 @@ function addEnemy(x, y) {
         speed: 50
     });
     return enemy;
-}*/
+}
