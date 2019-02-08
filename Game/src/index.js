@@ -9,24 +9,88 @@ import {
 } from "./constants.js";
 import { currentBlock, getRandomInt } from "./generic-functions.js";
 
+const preloader = new Phaser.Class({
+  Extends: Phaser.Scene,
+    initialize:
+    function Preloader() {
+        Phaser.Scene.call(this, { key: 'preloader' });
+    },
+    preload: preload,
+    create: function() {
+        this.scene.start('game');
+    }
+
+});
+
+const win = new Phaser.Class({
+  Extends: Phaser.Scene,
+  initialize:
+  function win() {
+      Phaser.Scene.call(this, { key: 'win' });
+  },
+
+  create: function() {
+      const text = this.add.text(WIDTH / 2, HEIGHT / 2, 'You win!', {fontSize: '32px'});
+
+      this.input.once('pointerup', function (event) {
+        this.scene.start('game');
+        enemies = [];
+        terrainMatrix = undefined;
+    }, this);
+  }
+
+});
+
+const game = new Phaser.Class({
+  Extends: Phaser.Scene,
+  initialize:
+  function Game() {
+      Phaser.Scene.call(this, { key: 'game' });
+      window.GAME = this;
+  
+      this.controls;
+      this.track;
+      this.text;
+  },
+
+  preload: preload,
+  create: create,
+  update: update
+});
+
+const lose = new Phaser.Class({
+  Extends: Phaser.Scene,
+  initialize:
+  function lose() {
+      Phaser.Scene.call(this, { key: 'lose' });
+  },
+
+  create: function() {
+      const text = this.add.text(WIDTH / 2, HEIGHT / 2, 'You lose...', {fontSize: '32px'});
+
+      this.input.once('pointerup', function (event) {
+        this.scene.start('game');
+        enemies = [];
+        terrainMatrix = undefined;
+    }, this);
+  }
+
+});
+
 // Config and set up the game, in general don't mess with
 var config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
   width: WIDTH,
   height: HEIGHT,
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  },
+  scene: [preloader, game, win, lose],
   physics: {
     default: "arcade"
   }
 };
 
 // game variables
-let game = new Phaser.Game(config);
+let start = new Phaser.Game(config);
 let Scene;
 
 // Declare variables
@@ -35,12 +99,14 @@ let player;
 let controls;
 let cooldown = 0;
 let playerSpeed = 140;
+let inv = 30;
+let hp = 3;
 
 // Enemy related variables
 let enemies = [];
 let terrainMatrix;
+let enemyCount = 2;
 let waveCount = 0;
-let enemieDestinations = [];
 
 // Function is ran before load, basically loads in all assets
 function preload() {
@@ -83,13 +149,17 @@ function create() {
   addBlock.call(this, grounds, 10, 10);
   this.physics.add.collider(player, grounds);
 
+  const scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
   // Add enemy
   const enemy = addEnemy.call(this, 300, 300);
   this.physics.add.collider(enemy, grounds);
+  this.physics.add.overlap(player, enemy, hitPlayer, null, this);
 
   const enemy2 = addEnemy.call(this, 100, 100);
   this.physics.add.collider(enemy2, grounds);
   this.physics.add.collider(enemy2, enemy);
+  this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
@@ -131,6 +201,7 @@ function create() {
 function update() {
   playerMove();
   cooldown -= 1;
+  inv -= 1;
   moveEnemies();
   // this.cameras.main.centerOn(player.x, player.y);
 }
@@ -238,6 +309,20 @@ function hitEnemy(bullet, enemy) {
   found.hp -= 1;
   if (found.hp <= 0) {
     enemy.disableBody(true, true);
+    enemyCount -= 1;
+    if (enemyCount == 0) {
+      this.scene.start('win');
+    }
+  }
+}
+
+function hitPlayer(player, enemy) {
+  if (inv <= 0) {
+    hp -= 1;
+    if (hp <= 0) {
+      this.scene.start('lose');
+    }
+    inv = 30;
   }
 }
 
