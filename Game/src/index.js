@@ -136,7 +136,7 @@ const lose = new Phaser.Class({
 
   create: function() {
     const text = this.add.text(WIDTH / 2, HEIGHT / 2, 'You lose...', {fontSize: '32px'});
-    let menuButton = this.add.sprite(this.game.renderer.width - 150, this.game.renderer.height - 100, "menu_button").setDepth(1);
+    let menuButton = this.add.sprite(this.game.renderer.width * (4/5), this.game.renderer.height - 100, "menu_button").setDepth(1);
     menuButton.setScale(0.2, 0.2);
     menuButton.setInteractive();
 
@@ -155,7 +155,7 @@ const lose = new Phaser.Class({
         terrainMatrix = undefined;
         //go to next scene
     })
-    let retryButton = this.add.sprite(this.game.renderer.width - 725, this.game.renderer.height - 100, "retry_button").setDepth(1);
+    let retryButton = this.add.sprite(this.game.renderer.width / 7, this.game.renderer.height - 100, "retry_button").setDepth(1);
     retryButton.setScale(0.15, 0.15);
     retryButton.setInteractive();
 
