@@ -32,8 +32,18 @@ let Scene;
 // Declare variables
 // Player related variables
 let player;
+let mouse;
 let controls;
+let abilities;
+let qActive = 0;
+let rActive = 0;
+let rCharges = 3;
+let qKey;
 let cooldown = 0;
+let qCooldown = 0;
+let wCooldown = 0;
+let eCooldown = 0;
+let rCooldown = 0;
 let playerSpeed = 140;
 
 // Enemy related variables
@@ -51,6 +61,7 @@ function preload() {
   this.load.image("enemy", "assets/enemy.png");
   this.load.image("boot", "assets/boot.png");
   this.load.image("firstaid", "assets/firstaid.png");
+  //this.load.image("Q", "assets/qability.png");
 }
 
 // Function is ran at start of game, initialize all sprites and math
@@ -93,9 +104,13 @@ function create() {
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
+  //abilities = this.input.keyboard.addKeys({ 'q': Phaser.Input.Keyboard.KeyCodes.Q, 'w': Phaser.Input.Keyboard.KeyCodes.W, 'e': Phaser.Input.Keyboard.KeyCodes.E, 'r': Phaser.Input.Keyboard.KeyCodes.R });
+  qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+
   this.input.on(
     "pointermove",
     function(pointer) {
+      mouse = pointer;
       const angle = BetweenPoints(player, pointer);
       SetToAngle(line, player.x, player.y, angle, 128);
       velocityFromRotation(angle, 600, velocity);
@@ -125,14 +140,88 @@ function create() {
     },
     this
   );
+  this.input.keyboard.on(
+    'keydown_Q',
+    function(event) {
+        if (qCooldown <= 0) {
+            console.log("Q");
+            qActive = 300;
+            qCooldown = 1000;
+        }
+        else {
+            console.log("Q on Cooldown");
+        }
+    },
+    this
+  );
+  this.input.keyboard.on(
+    "keydown_W",
+    function(event) {
+        if (wCooldown <= 0) {
+            console.log("W");
+            wCooldown = 1000;
+        }
+        else {
+            console.log("W on Cooldown");
+        }
+    },
+    this
+  );
+  this.input.keyboard.on(
+    "keydown_E",
+    function(event) {
+        if (eCooldown <= 0) {
+            console.log("E");
+            eCooldown = 1000;
+        }
+        else {
+            console.log("E on Cooldown");
+        }
+    },
+    this
+  );
+  this.input.keyboard.on(
+    "keydown_R",
+    function(event) {
+        if (rCooldown <= 0) {
+            console.log("R");
+            rActive = 800;
+            
+            if (rActive > 0 && rCharges > 0) {
+                rCharges -= 1;
+                player.disableBody(true, true);
+                player = this.physics.add.sprite(mouse.x, mouse.y, "player");
+            }
+            else {
+                rCooldown = 2200;
+            }
+        }
+        else {
+            console.log("R on Cooldown");
+        }
+    },
+    this
+  );
 }
 
 // Function is ran every frame to update the game
 function update() {
   playerMove();
   cooldown -= 1;
+  qCooldown -= 1;
+  wCooldown -= 1;
+  eCooldown -= 1;
+  rCooldown -= 1;
+  qActive -= 1;
+  rActive -= 1;
+
   moveEnemies();
   // this.cameras.main.centerOn(player.x, player.y);
+}
+
+//reset the charges on R if the cooldown is up
+if (rCooldown <= 0) {
+    rCharges = 3;
 }
 
 // Moves the player
@@ -158,9 +247,16 @@ function playerMove() {
 
 // Moves enemies
 function moveEnemies() {
-  enemies.forEach(function(enemy) {
-    enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
-  });
+    if (qActive <= 0) {
+        enemies.forEach(function(enemy) {
+        enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
+        });
+    }
+    else {
+        enemies.forEach(function(enemy) {
+            enemyMovement(enemy.enemy, player, terrainMatrix, 0);
+            });
+    }
 }
 
 // Collision bullet --> ground
