@@ -149,21 +149,8 @@ const lose = new Phaser.Class({
   },
 
   create: function() {
-<<<<<<< HEAD
     const text = this.add.text(WIDTH / 2, HEIGHT / 2, 'You lose...', {fontSize: '32px'});
     let menuButton = this.add.sprite(this.game.renderer.width * (4/5), this.game.renderer.height - 100, "menu_button").setDepth(1);
-=======
-    const text = this.add.text(WIDTH / 2, HEIGHT / 2, "You lose...", {
-      fontSize: "32px"
-    });
-    let menuButton = this.add
-      .sprite(
-        this.game.renderer.width - 150,
-        this.game.renderer.height - 100,
-        "menu_button"
-      )
-      .setDepth(1);
->>>>>>> origin/master
     menuButton.setScale(0.2, 0.2);
     menuButton.setInteractive();
 
@@ -177,27 +164,12 @@ const lose = new Phaser.Class({
     });
 
     menuButton.on("pointerup", () => {
-<<<<<<< HEAD
         this.scene.start("MenuScene");;
         enemies = [];
         terrainMatrix = undefined;
         //go to next scene
     })
     let retryButton = this.add.sprite(this.game.renderer.width / 7, this.game.renderer.height - 100, "retry_button").setDepth(1);
-=======
-      this.scene.start("MenuScene");
-      enemies = [];
-      terrainMatrix = undefined;
-      //go to next scene
-    });
-    let retryButton = this.add
-      .sprite(
-        this.game.renderer.width - 725,
-        this.game.renderer.height - 100,
-        "retry_button"
-      )
-      .setDepth(1);
->>>>>>> origin/master
     retryButton.setScale(0.15, 0.15);
     retryButton.setInteractive();
 
