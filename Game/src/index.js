@@ -16,6 +16,7 @@ const preloader = new Phaser.Class({
         Phaser.Scene.call(this, { key: 'preloader' });
     },
     preload: preload,
+
     create: function() {
         this.scene.start('MenuScene');
     }
@@ -37,13 +38,15 @@ const MenuScene = new Phaser.Class({
         this.load.image("menu_background", "assets/background.jpg");
         this.load.image("play_button", "assets/play_button.png");
         this.load.image("leaderboard_button", "assets/leaderboard_button.png");
-
-
+        this.load.image("game_title", "assets/game_title.png");
     },
 
     create: function(){
         let background = this.add.sprite(0,0,"menu_background");
+        background.setScale(1.7, 1.7);
         background.setOrigin(0,0);
+
+        this.add.sprite(this.game.renderer.width / 2, this.game.renderer.height / 2 -100, "game_title").setDepth(1);
         
 
         let playButton = this.add.sprite(this.game.renderer.width / 2, this.game.renderer.height / 2 + 50, "play_button").setDepth(1);
@@ -53,6 +56,7 @@ const MenuScene = new Phaser.Class({
             //make play button bloom
             playButton.setScale(1.5, 1.5);
         })
+
         playButton.on("pointerout", () => {
             //reset button bloom
             playButton.setScale(1, 1);
@@ -77,9 +81,7 @@ const MenuScene = new Phaser.Class({
         })
 
         leaderboardButton.on("pointerup", () => {
-            //this.scene.start(LeaderboardScene);
             //go to leaderboard page
-            console.log("pressed");
         })
     }
 });
@@ -127,10 +129,46 @@ const lose = new Phaser.Class({
       Phaser.Scene.call(this, { key: 'lose' });
   },
 
-  create: function() {
-      const text = this.add.text(WIDTH / 2, HEIGHT / 2, 'You lose...', {fontSize: '32px'});
+  preload: function(){
+    this.load.image("menu_button", "assets/menu_button.png");
+    this.load.image("retry_button", "assets/retry_button.png");
+  },
 
-      this.input.once('pointerup', function (event) {
+  create: function() {
+    const text = this.add.text(WIDTH / 2, HEIGHT / 2, 'You lose...', {fontSize: '32px'});
+    let menuButton = this.add.sprite(this.game.renderer.width - 150, this.game.renderer.height - 100, "menu_button").setDepth(1);
+    menuButton.setScale(0.2, 0.2);
+    menuButton.setInteractive();
+
+    menuButton.on("pointerover", () => {
+        //make play button bloom
+        menuButton.setScale(0.3, 0.3);
+    })
+    menuButton.on("pointerout", () => {
+        //reset button bloom
+        menuButton.setScale(0.2, 0.2);
+    })
+
+    menuButton.on("pointerup", () => {
+        this.scene.start("MenuScene");;
+        enemies = [];
+        terrainMatrix = undefined;
+        //go to next scene
+    })
+    let retryButton = this.add.sprite(this.game.renderer.width - 725, this.game.renderer.height - 100, "retry_button").setDepth(1);
+    retryButton.setScale(0.15, 0.15);
+    retryButton.setInteractive();
+
+    retryButton.on("pointerover", () => {
+        //make play button bloom
+        retryButton.setScale(0.25, 0.25);
+    })
+    retryButton.on("pointerout", () => {
+        //reset button bloom
+        retryButton.setScale(0.15, 0.15);
+    })
+
+    retryButton.on('pointerup', function (event) {
         this.scene.start('game');
         enemies = [];
         terrainMatrix = undefined;
@@ -201,7 +239,7 @@ function create() {
   const grass = this.add.image(400, 300, "grass");
 
   // Add player
-  player = this.physics.add.sprite(128, 64, "player");
+  player = this.physics.add.sprite(this.game.renderer.width / 2, this.game.renderer.height / 2, "player");
   player.setBounce(0.1);
   player.setCollideWorldBounds(true);
 
