@@ -49,6 +49,7 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
 
     // Move towards next block in
     if (finalDest.x == dest.x && finalDest.y == dest.y) {
+      console.log('in')
         if (enemy.x < player.x) {
             enemy.setVelocityX(speed);
         } else if (enemy.x > player.x) {
@@ -61,15 +62,15 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
             enemy.setVelocityY(-speed);
         }
     } else {
-        if (enemy.x < (finalDest.x * BLOCK_SIZE) + HALF_BLOCK && (finalDest.x * BLOCK_SIZE) + HALF_BLOCK <= HEIGHT) {
+        if (enemy.x < (finalDest.x * BLOCK_SIZE) + 16 && (finalDest.x * BLOCK_SIZE) + 16 <= HEIGHT) {
             enemy.setVelocityX(speed);
-        } else if (enemy.x > (finalDest.x * BLOCK_SIZE) + HALF_BLOCK && (finalDest.x * BLOCK_SIZE) + HALF_BLOCK >= 0) {
+        } else if (enemy.x > (finalDest.x * BLOCK_SIZE) + 16 && (finalDest.x * BLOCK_SIZE) + 16 >= 0) {
             enemy.setVelocityX(-speed);
         }
 
-        if (enemy.y < (finalDest.y * BLOCK_SIZE) + HALF_BLOCK && (finalDest.y * BLOCK_SIZE) + HALF_BLOCK <= WIDTH) {
+        if (enemy.y < (finalDest.y * BLOCK_SIZE) + 16 && (finalDest.y * BLOCK_SIZE) + 16 <= WIDTH) {
             enemy.setVelocityY(speed);
-        } else if (enemy.y > (finalDest.y * BLOCK_SIZE) + HALF_BLOCK && (finalDest.y * BLOCK_SIZE) + HALF_BLOCK >= 0) {
+        } else if (enemy.y > (finalDest.y * BLOCK_SIZE) + 16 && (finalDest.y * BLOCK_SIZE) + 16 >= 0) {
             enemy.setVelocityY(-speed);
         }
     }

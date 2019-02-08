@@ -47,7 +47,7 @@ const game = new Phaser.Class({
   function Game() {
       Phaser.Scene.call(this, { key: 'game' });
       window.GAME = this;
-  
+
       this.controls;
       this.track;
       this.text;
@@ -111,12 +111,18 @@ let waveCount = 0;
 // Function is ran before load, basically loads in all assets
 function preload() {
   this.load.image("grass", "assets/grass.png");
-  this.load.image("ground", "assets/ground.png");
-  this.load.image("player", "assets/player.png");
+  this.load.image("ground", "assets/sml_rock64.png");
   this.load.image("bullet", "assets/bullet.png");
-  this.load.image("enemy", "assets/enemy.png");
+  this.load.spritesheet('enemy', 'assets/slime64.png', {
+      frameWidth: 64,
+      frameHeight: 56
+  });
   this.load.image("boot", "assets/boot.png");
   this.load.image("firstaid", "assets/firstaid.png");
+  this.load.spritesheet('player', 'assets/wizard64.png', {
+      frameWidth: 64,
+      frameHeight: 64
+  });
 }
 
 // Function is ran at start of game, initialize all sprites and math
@@ -133,9 +139,44 @@ function create() {
   const grass = this.add.image(400, 300, "grass");
 
   // Add player
-  player = this.physics.add.sprite(24, 24, "player");
+  player = this.physics.add.sprite(128, 64, "player");
   player.setBounce(0.1);
   player.setCollideWorldBounds(true);
+
+  // player animations
+  this.anims.create({
+      key: 'idle',
+      frames: [ { key: 'player', frame: 0 } ],
+      frameRate: 0
+  });
+
+  this.anims.create({
+      key: 'down',
+      frames: this.anims.generateFrameNumbers('player', { start: 1, end: 2 }),
+      frameRate: 5,
+      repeat: -1
+  });
+
+  this.anims.create({
+      key: 'up',
+      frames: this.anims.generateFrameNumbers('player', { start: 7, end: 8 }),
+      frameRate: 5,
+      repeat: -1
+  });
+
+  this.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('player', { start: 3, end: 4 }),
+      frameRate: 5,
+      repeat: -1
+  });
+
+  this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('player', { start: 5, end: 6 }),
+      frameRate: 5,
+      repeat: -1
+  });
 
   // Populate terrain matrix for AI
   initTerrainMatrix();
@@ -143,23 +184,19 @@ function create() {
   // Add grounds
   const grounds = this.physics.add.staticGroup();
 
-  addBlock.call(this, grounds, 9, 9);
-  addBlock.call(this, grounds, 9, 10);
-  addBlock.call(this, grounds, 10, 9);
-  addBlock.call(this, grounds, 10, 10);
+  addBlock.call(this, grounds, 2, 2);
+  addBlock.call(this, grounds, 2, 3);
   this.physics.add.collider(player, grounds);
 
-  const scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-
   // Add enemy
-  const enemy = addEnemy.call(this, 300, 300);
-  this.physics.add.collider(enemy, grounds);
+  const enemy = addEnemy.call(this, 64, 64);
+  // this.physics.add.collider(enemy, grounds);
   this.physics.add.overlap(player, enemy, hitPlayer, null, this);
 
-  const enemy2 = addEnemy.call(this, 100, 100);
-  this.physics.add.collider(enemy2, grounds);
-  this.physics.add.collider(enemy2, enemy);
-  this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
+  // const enemy2 = addEnemy.call(this, 100, 100);
+  // this.physics.add.collider(enemy2, grounds);
+  // this.physics.add.collider(enemy2, enemy);
+  // this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
@@ -211,8 +248,10 @@ function playerMove() {
   // Left/right
   if (controls.left.isDown) {
     player.setVelocityX(-playerSpeed);
+    player.anims.play('left', true);
   } else if (controls.right.isDown) {
     player.setVelocityX(playerSpeed);
+    player.anims.play('right', true);
   } else {
     player.setVelocityX(0);
   }
@@ -220,8 +259,10 @@ function playerMove() {
   // Down/up
   if (controls.up.isDown) {
     player.setVelocityY(-playerSpeed);
+    player.anims.play('up', true);
   } else if (controls.down.isDown) {
     player.setVelocityY(playerSpeed);
+    player.anims.play('down', true);
   } else {
     player.setVelocityY(0);
   }
