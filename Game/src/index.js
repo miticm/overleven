@@ -215,7 +215,7 @@ function preload() {
   this.load.image("bullet", "assets/bullet.png");
   this.load.spritesheet('enemy', 'assets/slime64.png', {
       frameWidth: 64,
-      frameHeight: 56
+      frameHeight: 64
   });
   this.load.image("boot", "assets/boot.png");
   this.load.image("firstaid", "assets/firstaid.png");
@@ -275,6 +275,13 @@ function create() {
       key: 'right',
       frames: this.anims.generateFrameNumbers('player', { start: 5, end: 6 }),
       frameRate: 5,
+      repeat: -1
+  });
+
+  this.anims.create({
+      key: 'enemy',
+      frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 1 }),
+      frameRate: 4,
       repeat: -1
   });
 
@@ -468,12 +475,13 @@ function hitPlayer(player, enemy) {
 }
 
 function addEnemy(x, y) {
-  const enemy = this.physics.add.sprite(x, y, "enemy");
+  const enemy = this.physics.add.sprite(x, y, 'enemy');
   console.log(enemy);
   enemies.push({
     enemy: enemy,
     hp: 2,
     speed: 50
   });
+  enemy.anims.play('enemy', true);
   return enemy;
 }
