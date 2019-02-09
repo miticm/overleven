@@ -13,8 +13,6 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
     const queue = new Array(); // shift --> dequeue, push --> enqueue
     queue.push(coord);
 
-    addVisited(visited, coord.x, coord.y, coord.x, coord.y);
-
     let currentCoord;
     while((currentCoord = queue.shift()) !== undefined) {
         if (currentCoord == undefined) {
@@ -25,11 +23,13 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
             while(tempCoord.x != originalCoord.x || tempCoord.y != originalCoord.y) {
                 tempCoord = visited[tempCoord.x][tempCoord.y];
                 const v = visited[tempCoord.x][tempCoord.y];
-                if (v.x == originalCoord.x && v.y == originalCoord.y) {
+                if (v == undefined) {
+                    // tempCoord = dest;
+                } else if (v.x == originalCoord.x && v.y == originalCoord.y) {
+                    finalDest = tempCoord;
                     break;
                 }
             }
-            finalDest = tempCoord;
             break;
         }
         const possibilities = enumerateNeighbors(currentCoord, visited, terrainMatrix);
@@ -49,7 +49,6 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
 
     // Move towards next block in
     if (finalDest.x == dest.x && finalDest.y == dest.y) {
-      console.log('in')
         if (enemy.x < player.x) {
             enemy.setVelocityX(speed);
         } else if (enemy.x > player.x) {
