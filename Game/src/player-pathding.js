@@ -1,6 +1,15 @@
 // Player pathfinding
-import { currentBlock } from './generic-functions.js';
-import { BLOCK_SIZE, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, HALF_BLOCK } from './constants.js';
+import {
+    currentBlock
+} from './generic-functions.js';
+import {
+    BLOCK_SIZE,
+    WIDTH,
+    HEIGHT,
+    BLOCK_WIDTH,
+    BLOCK_HEIGHT,
+    HALF_BLOCK
+} from './constants.js';
 
 export function enemyMovement(player, mouseX, mouseY) {
     const coord = currentBlock(enemy.x, enemy.y);
@@ -9,18 +18,18 @@ export function enemyMovement(player, mouseX, mouseY) {
     let finalDest = dest;
 
     // Recalculate path to player
-    const visited = { };
+    const visited = {};
     const queue = new Array(); // shift --> dequeue, push --> enqueue
     queue.push(coord);
 
     let currentCoord;
-    while((currentCoord = queue.shift()) !== undefined) {
+    while ((currentCoord = queue.shift()) !== undefined) {
         if (currentCoord == undefined) {
             break;
         }
         if (currentCoord.x == dest.x && currentCoord.y == dest.y) {
             let tempCoord = currentCoord;
-            while(tempCoord.x != originalCoord.x || tempCoord.y != originalCoord.y) {
+            while (tempCoord.x != originalCoord.x || tempCoord.y != originalCoord.y) {
                 tempCoord = visited[tempCoord.x][tempCoord.y];
                 const v = visited[tempCoord.x][tempCoord.y];
                 if (v == undefined) {
@@ -77,7 +86,7 @@ export function enemyMovement(player, mouseX, mouseY) {
 }
 
 function enumerateNeighbors(currentCoord, visited, terrainMatrix) {
-    const ret = { };
+    const ret = {};
     // Up
     if (currentCoord.y - 1 >= 0 &&
         (!visited[currentCoord.x] || !visited[currentCoord.x][currentCoord.y - 1]) &&
@@ -124,7 +133,7 @@ function enumerateNeighbors(currentCoord, visited, terrainMatrix) {
 
 function addVisited(visited, x, y, prevX, prevY) {
     if (!Boolean(visited[x])) {
-        visited[x] = { };
+        visited[x] = {};
     }
     const obj = visited[x];
     obj[y] = {
