@@ -1,6 +1,8 @@
 // File for generic useful functions
 import 'phaser';
-import { BLOCK_SIZE } from "./constants";
+import {
+  BLOCK_SIZE
+} from "./constants";
 
 // Returns an object describing which block the coordinates are in
 export function currentBlock(x, y) {
