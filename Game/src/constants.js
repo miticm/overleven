@@ -1,6 +1,6 @@
 // Constants for the whole file
-export const HEIGHT = 600;
-export const WIDTH = 800;
+export const HEIGHT = 640;
+export const WIDTH = 896;
 export const BLOCK_SIZE = 64;
 
 // Computed
