@@ -32,6 +32,9 @@ export const game = new Phaser.Class({
 });
 
 let Scene;
+let mouseX = 0;
+let mouseY = 0;
+let moving = false;
 
 // Declare variables
 // Player related variables
@@ -66,11 +69,10 @@ function create() {
   const velocityFromRotation = this.physics.velocityFromRotation;
   const velocity = new Phaser.Math.Vector2();
   const line = new Phaser.Geom.Line();
-  Scene = this;
-  enemies = [];
+  initVariables.call(this);
 
   // Add background
-  const grass = this.add.image(400, 300, "grass");
+  this.add.image(WIDTH / 2, HEIGHT / 2, "grass");
 
   // Add player
   player = this.physics.add.sprite(
@@ -78,7 +80,6 @@ function create() {
     this.game.renderer.height / 2,
     "player"
   );
-  player.setBounce(0.1);
   player.setCollideWorldBounds(true);
 
   // player animations
@@ -150,6 +151,7 @@ function create() {
   addBlock.call(this, grounds, 2, 2);
   addBlock.call(this, grounds, 2, 3);
   this.physics.add.collider(player, grounds);
+  this.physics.add.overlap(player, grounds, stopPlayer, null, this);
 
   // Add enemy
   const enemy = addEnemy.call(this, 64, 64);
@@ -165,36 +167,41 @@ function create() {
   //abilities = this.input.keyboard.addKeys({ 'q': Phaser.Input.Keyboard.KeyCodes.Q, 'w': Phaser.Input.Keyboard.KeyCodes.W, 'e': Phaser.Input.Keyboard.KeyCodes.E, 'r': Phaser.Input.Keyboard.KeyCodes.R });
   qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
-  this.input.on(
-    "pointermove",
-    function (pointer) {
-      mouse = pointer;
-      const angle = BetweenPoints(player, pointer);
-      SetToAngle(line, player.x, player.y, angle, 128);
-      velocityFromRotation(angle, 600, velocity);
-    },
-    this
-  );
+  // this.input.on(
+  //   "pointermove",
+  //   function (pointer) {
+      // mouse = pointer;
+      // const angle = BetweenPoints(player, pointer);
+      // SetToAngle(line, player.x, player.y, angle, 128);
+      // velocityFromRotation(angle, 600, velocity);
+  //   },
+  //   this
+  // );
   this.input.on(
     "pointerup",
-    function () {
-      if (cooldown <= 0) {
-        const bullet = this.physics.add.sprite(player.x, player.y, "bullet");
-        bullet
-          .enableBody(true, player.x, player.y, true, true)
-          .setVelocity(velocity.x, velocity.y);
-        cooldown = 20;
-        this.physics.add.overlap(bullet, grounds, breakGround, null, this);
-        for (let i = 0; i < enemies.length; i++) {
-          this.physics.add.overlap(
-            bullet,
-            enemies[i].enemy,
-            hitEnemy,
-            null,
-            this
-          );
-        }
-      }
+    function (pointer) {
+      mouseX = pointer.x;
+      mouseY = pointer.y;
+      mouse = pointer;
+      moving = true;
+      // OLD CODE FOR SHOOTING
+      // if (cooldown <= 0) {
+      //   const bullet = this.physics.add.sprite(player.x, player.y, "bullet");
+      //   bullet
+      //     .enableBody(true, player.x, player.y, true, true)
+      //     .setVelocity(velocity.x, velocity.y);
+      //   cooldown = 20;
+      //   this.physics.add.overlap(bullet, grounds, breakGround, null, this);
+      //   for (let i = 0; i < enemies.length; i++) {
+      //     this.physics.add.overlap(
+      //       bullet,
+      //       enemies[i].enemy,
+      //       hitEnemy,
+      //       null,
+      //       this
+      //     );
+      //   }
+      // }
     },
     this
   );
@@ -246,6 +253,8 @@ function create() {
           rCharges -= 1;
           player.disableBody(true, true);
           player = this.physics.add.sprite(mouse.x, mouse.y, "player");
+          player.
+          moving = false;
         } else {
           rCooldown = 2200;
         }
@@ -260,6 +269,12 @@ function create() {
 // Function is ran every frame to update the game
 function update() {
   playerMove();
+  cooldowns();
+  moveEnemies();
+  // this.cameras.main.centerOn(player.x, player.y);
+}
+
+function cooldowns() {
   cooldown -= 1;
   qCooldown -= 1;
   wCooldown -= 1;
@@ -268,38 +283,66 @@ function update() {
   qActive -= 1;
   rActive -= 1;
   inv -= 1;
-  moveEnemies();
-  // this.cameras.main.centerOn(player.x, player.y);
-}
 
-//reset the charges on R if the cooldown is up
-if (rCooldown <= 0) {
-  rCharges = 3;
+  if (rCooldown <= 0) {
+    rCharges = 3;
+  }
 }
 
 // Moves the player
 function playerMove() {
-  // Left/right
-  if (controls.left.isDown) {
-    player.setVelocityX(-playerSpeed);
-    player.anims.play("left", true);
-  } else if (controls.right.isDown) {
-    player.setVelocityX(playerSpeed);
-    player.anims.play("right", true);
-  } else {
-    player.setVelocityX(0);
+
+  if (moving) {
+
+    if (player.x == mouseX && player.y == mouseY) {
+      moving = false;
+    } else {
+      const tempXSpeed = Math.abs(mouseX - player.x) < playerSpeed ? Math.abs(mouseX - player.x) : playerSpeed;
+      if (player.x > mouseX) {
+        player.setVelocityX(-tempXSpeed);
+        player.anims.play("left", true);
+      } else if (player.x < mouseX) {
+        player.setVelocityX(tempXSpeed);
+        player.anims.play("right", true);
+      } else {
+        player.setVelocityX(0);
+      }
+  
+      const tempYSpeed = Math.abs(mouseY - player.y) < playerSpeed ? Math.abs(mouseY - player.y) : playerSpeed;
+      if (player.y > mouseY) {
+        player.setVelocityY(-tempYSpeed);
+        player.anims.play("up", true);
+      } else if (player.y < mouseY) {
+        player.setVelocityY(tempYSpeed);
+        player.anims.play("down", true);
+      } else {
+        player.setVelocityY(0);
+      }
+    }
   }
 
-  // Down/up
-  if (controls.up.isDown) {
-    player.setVelocityY(-playerSpeed);
-    player.anims.play("up", true);
-  } else if (controls.down.isDown) {
-    player.setVelocityY(playerSpeed);
-    player.anims.play("down", true);
-  } else {
-    player.setVelocityY(0);
-  }
+  // OLD CODE FOR MOVING
+  // Left/right
+  // if (controls.left.isDown) {
+  //   player.setVelocityX(-playerSpeed);
+  //   player.anims.play("left", true);
+  // } else if (controls.right.isDown) {
+  //   player.setVelocityX(playerSpeed);
+  //   player.anims.play("right", true);
+  // } else {
+  //   player.setVelocityX(0);
+  // }
+
+  // // Down/up
+  // if (controls.up.isDown) {
+  //   player.setVelocityY(-playerSpeed);
+  //   player.anims.play("up", true);
+  // } else if (controls.down.isDown) {
+  //   player.setVelocityY(playerSpeed);
+  //   player.anims.play("down", true);
+  // } else {
+  //   player.setVelocityY(0);
+  // }
 }
 
 // Moves enemies
@@ -379,6 +422,28 @@ function initTerrainMatrix() {
   }
 }
 
+// Called when game is created or recreated
+function initVariables() {
+  enemies = [];
+  Scene = this;
+  qActive = 0;
+  rActive = 0;
+  rCharges = 3;
+  cooldown = 0;
+  qCooldown = 0;
+  wCooldown = 0;
+  eCooldown = 0;
+  rCooldown = 0;
+  playerSpeed = 140;
+  inv = 30;
+  hp = 3;
+  mouseX = 0;
+  mouseY = 0;
+  moving = false;
+  waveCount = 0;
+  enemyCount = 2;
+}
+
 // Adds a block in the game and into the matrix for AI pathing
 function addBlock(group, x, y) {
   group.create(x * BLOCK_SIZE + 8, y * BLOCK_SIZE + 8, "ground");
@@ -422,4 +487,8 @@ function addEnemy(x, y) {
   });
   enemy.anims.play("enemy", true);
   return enemy;
+}
+
+function stopPlayer(player, grounds) {
+  moving = false;
 }
