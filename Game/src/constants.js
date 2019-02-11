@@ -1,6 +1,6 @@
 // Constants for the whole file
-export const HEIGHT = window.innerHeight;
-export const WIDTH = window.innerWidth;
+export const HEIGHT = 640;
+export const WIDTH = 896;
 export const BLOCK_SIZE = 64;
 
 // Computed

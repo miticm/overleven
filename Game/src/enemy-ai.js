@@ -1,6 +1,15 @@
 // Enemy AI file
-import { currentBlock } from './generic-functions.js';
-import { BLOCK_SIZE, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, HALF_BLOCK } from './constants.js';
+import {
+    currentBlock
+} from './generic-functions.js';
+import {
+    BLOCK_SIZE,
+    WIDTH,
+    HEIGHT,
+    BLOCK_WIDTH,
+    BLOCK_HEIGHT,
+    HALF_BLOCK
+} from './constants.js';
 
 export function enemyMovement(enemy, player, terrainMatrix, speed) {
     const coord = currentBlock(enemy.x, enemy.y);
@@ -9,27 +18,27 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
     let finalDest = dest;
 
     // Recalculate path to player
-    const visited = { };
+    const visited = {};
     const queue = new Array(); // shift --> dequeue, push --> enqueue
     queue.push(coord);
 
-    addVisited(visited, coord.x, coord.y, coord.x, coord.y);
-
     let currentCoord;
-    while((currentCoord = queue.shift()) !== undefined) {
+    while ((currentCoord = queue.shift()) !== undefined) {
         if (currentCoord == undefined) {
             break;
         }
         if (currentCoord.x == dest.x && currentCoord.y == dest.y) {
             let tempCoord = currentCoord;
-            while(tempCoord.x != originalCoord.x || tempCoord.y != originalCoord.y) {
+            while (tempCoord.x != originalCoord.x || tempCoord.y != originalCoord.y) {
                 tempCoord = visited[tempCoord.x][tempCoord.y];
                 const v = visited[tempCoord.x][tempCoord.y];
-                if (v.x == originalCoord.x && v.y == originalCoord.y) {
+                if (v == undefined) {
+                    // tempCoord = dest;
+                } else if (v.x == originalCoord.x && v.y == originalCoord.y) {
+                    finalDest = tempCoord;
                     break;
                 }
             }
-            finalDest = tempCoord;
             break;
         }
         const possibilities = enumerateNeighbors(currentCoord, visited, terrainMatrix);
@@ -49,7 +58,6 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
 
     // Move towards next block in
     if (finalDest.x == dest.x && finalDest.y == dest.y) {
-      console.log('in')
         if (enemy.x < player.x) {
             enemy.setVelocityX(speed);
         } else if (enemy.x > player.x) {
@@ -78,7 +86,7 @@ export function enemyMovement(enemy, player, terrainMatrix, speed) {
 }
 
 function enumerateNeighbors(currentCoord, visited, terrainMatrix) {
-    const ret = { };
+    const ret = {};
     // Up
     if (currentCoord.y - 1 >= 0 &&
         (!visited[currentCoord.x] || !visited[currentCoord.x][currentCoord.y - 1]) &&
@@ -125,7 +133,7 @@ function enumerateNeighbors(currentCoord, visited, terrainMatrix) {
 
 function addVisited(visited, x, y, prevX, prevY) {
     if (!Boolean(visited[x])) {
-        visited[x] = { };
+        visited[x] = {};
     }
     const obj = visited[x];
     obj[y] = {
