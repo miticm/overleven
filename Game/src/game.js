@@ -32,8 +32,8 @@ export const game = new Phaser.Class({
 });
 
 let Scene;
-let mouseX;
-let mouseY;
+let mouseX = 0;
+let mouseY = 0;
 let moving = false;
 
 // Declare variables
@@ -69,8 +69,7 @@ function create() {
   const velocityFromRotation = this.physics.velocityFromRotation;
   const velocity = new Phaser.Math.Vector2();
   const line = new Phaser.Geom.Line();
-  Scene = this;
-  enemies = [];
+  initVariables.call(this);
 
   // Add background
   this.add.image(WIDTH / 2, HEIGHT / 2, "grass");
@@ -421,6 +420,28 @@ function initTerrainMatrix() {
   for (let i = 0; i < outer; i++) {
     terrainMatrix[i] = new Array(inner);
   }
+}
+
+// Called when game is created or recreated
+function initVariables() {
+  enemies = [];
+  Scene = this;
+  qActive = 0;
+  rActive = 0;
+  rCharges = 3;
+  cooldown = 0;
+  qCooldown = 0;
+  wCooldown = 0;
+  eCooldown = 0;
+  rCooldown = 0;
+  playerSpeed = 140;
+  inv = 30;
+  hp = 3;
+  mouseX = 0;
+  mouseY = 0;
+  moving = false;
+  waveCount = 0;
+  enemyCount = 2;
 }
 
 // Adds a block in the game and into the matrix for AI pathing
