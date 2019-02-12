@@ -28,11 +28,16 @@ function preload() {
   this.load.image("firstaid", "assets/firstaid.png");
   //this.load.image("Q", "assets/qability.png");
   this.load.image("potion", "assets/potion.png");
+  this.load.image("tree", "assets/tree.png");
   this.load.spritesheet("player", "assets/wizard64.png", {
     frameWidth: 64,
     frameHeight: 64
   });
   this.load.spritesheet("fireball", "assets/fireball.png", {
+    frameWidth: 64,
+    frameHeight: 64
+  });
+  this.load.spritesheet("mine", "assets/mine.png", {
     frameWidth: 64,
     frameHeight: 64
   });

@@ -131,11 +131,33 @@ function create() {
     repeat: -1
   });
 
+  // Slime enemy animation
   this.anims.create({
     key: "enemy",
     frames: this.anims.generateFrameNumbers("enemy", {
       start: 0,
       end: 1
+    }),
+    frameRate: 4,
+    repeat: -1
+  });
+
+  // Player Ability Animation
+  this.anims.create({
+    key: "fireball",
+    frames: this.anims.generateFrameNumbers("fireball", {
+      start: 0,
+      end: 1
+    }),
+    frameRate: 5,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: "explode",
+    frames: this.anims.generateFrameNumbers("mine", {
+      start: 1,
+      end: 4
     }),
     frameRate: 4,
     repeat: -1
@@ -211,6 +233,7 @@ function create() {
         .setVelocity(velocity.x, velocity.y);
 
         this.physics.add.overlap(fireball, grounds, breakGround, null, this);
+        fireball.anims.play("fireball", true);
         for (let i = 0; i < enemies.length; i++) {
         this.physics.add.overlap(
         fireball,
@@ -220,8 +243,8 @@ function create() {
         this
         );
       }
-        
-        
+
+
         console.log("Q");
         qCooldown = 600;
       } else {
@@ -238,10 +261,10 @@ function create() {
               const mine = this.physics.add.sprite(player.x, player.y, "mine");
               mine
               .enableBody(true, player.x, player.y, true, true)
-      
+
               this.physics.add.overlap(mine, grounds, breakGround, null, this);
               this.physics.add.overlap(mine, player, mineTrip, null, this);
-        
+
         console.log("W");
         wCooldown = 1000;
         wActive = 150;
@@ -278,7 +301,7 @@ function create() {
             rCharges -= 1;
             player.x = mouse.x;
             player.y = mouse.y;
-          
+
             //make the player stay still
             moving = false;
             player.setVelocity(0);
@@ -333,7 +356,7 @@ function playerMove() {
       } else {
         player.setVelocityX(0);
       }
-  
+
       const tempYSpeed = Math.abs(mouseY - player.y) < playerSpeed ? Math.abs(mouseY - player.y) : playerSpeed;
       if (player.y > mouseY) {
         player.setVelocityY(-tempYSpeed);
@@ -493,7 +516,7 @@ function fireballHit(fireball, enemy) {
     if (DistanceBetween(fireball.x, fireball.y, enemies[i].enemy.x, enemies[i].enemy.y) < 75) {
       enemies[i].hp -= 1;
     }
-    
+
     //check if each enemy is dead
     if (enemies[i].hp <= 0) {
       enemies[i].enemy.disableBody(true, true);
@@ -507,6 +530,7 @@ function fireballHit(fireball, enemy) {
 
 function mineTrip(mine, player) {
   if (wActive <= 0) {
+    mine.anims.play("explode", true);
     mine.disableBody(true, true);
     const DistanceBetween = Phaser.Math.Distance.Between;
 
@@ -515,7 +539,7 @@ function mineTrip(mine, player) {
       if (DistanceBetween(mine.x, mine.y, enemies[i].enemy.x, enemies[i].enemy.y) < 125) {
         enemies[i].hp -= 3;
       }
-      
+
       //check if each enemy is dead
       if (enemies[i].hp <= 0) {
         enemies[i].enemy.disableBody(true, true);
