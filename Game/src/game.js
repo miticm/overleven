@@ -41,11 +41,10 @@ let moving = false;
 let player;
 let mouse;
 let controls;
-let abilities;
-let qActive = 0;
+let eActive = 0;
+let wActive = 0;
 let rActive = 0;
 let rCharges = 3;
-let qKey;
 let cooldown = 0;
 let qCooldown = 0;
 let wCooldown = 0;
@@ -155,7 +154,6 @@ function create() {
 
   // Add enemy
   const enemy = addEnemy.call(this, 64, 64);
-  // this.physics.add.collider(enemy, grounds);
   this.physics.add.overlap(player, enemy, hitPlayer, null, this);
 
   const enemy2 = addEnemy.call(this, 256, 64);
@@ -164,27 +162,24 @@ function create() {
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
-  //abilities = this.input.keyboard.addKeys({ 'q': Phaser.Input.Keyboard.KeyCodes.Q, 'w': Phaser.Input.Keyboard.KeyCodes.W, 'e': Phaser.Input.Keyboard.KeyCodes.E, 'r': Phaser.Input.Keyboard.KeyCodes.R });
-  qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
-  // this.input.on(
-  //   "pointermove",
-  //   function (pointer) {
-      // mouse = pointer;
-      // const angle = BetweenPoints(player, pointer);
-      // SetToAngle(line, player.x, player.y, angle, 128);
-      // velocityFromRotation(angle, 600, velocity);
-  //   },
-  //   this
-  // );
+  this.input.on(
+    "pointermove",
+    function (pointer) {
+      mouse = pointer;
+      const angle = BetweenPoints(player, pointer);
+      SetToAngle(line, player.x, player.y, angle, 128);
+      velocityFromRotation(angle, 600, velocity);
+    },
+    this
+  );
   this.input.on(
     "pointerup",
     function (pointer) {
       mouseX = pointer.x;
       mouseY = pointer.y;
-      mouse = pointer;
       moving = true;
-      // OLD CODE FOR SHOOTING
+      //OLD CODE FOR SHOOTING
       // if (cooldown <= 0) {
       //   const bullet = this.physics.add.sprite(player.x, player.y, "bullet");
       //   bullet
@@ -209,9 +204,26 @@ function create() {
     'keydown_Q',
     function (event) {
       if (qCooldown <= 0) {
+      //create the fireball
+        const fireball = this.physics.add.sprite(player.x, player.y, "fireball");
+        fireball
+        .enableBody(true, player.x, player.y, true, true)
+        .setVelocity(velocity.x, velocity.y);
+
+        this.physics.add.overlap(fireball, grounds, breakGround, null, this);
+        for (let i = 0; i < enemies.length; i++) {
+        this.physics.add.overlap(
+        fireball,
+        enemies[i].enemy,
+        fireballHit,
+        null,
+        this
+        );
+      }
+        
+        
         console.log("Q");
-        qActive = 300;
-        qCooldown = 1000;
+        qCooldown = 600;
       } else {
         console.log("Q on Cooldown");
       }
@@ -222,8 +234,17 @@ function create() {
     "keydown_W",
     function (event) {
       if (wCooldown <= 0) {
+              //create the Mine
+              const mine = this.physics.add.sprite(player.x, player.y, "mine");
+              mine
+              .enableBody(true, player.x, player.y, true, true)
+      
+              this.physics.add.overlap(mine, grounds, breakGround, null, this);
+              this.physics.add.overlap(mine, player, mineTrip, null, this);
+        
         console.log("W");
         wCooldown = 1000;
+        wActive = 150;
       } else {
         console.log("W on Cooldown");
       }
@@ -235,6 +256,7 @@ function create() {
     function (event) {
       if (eCooldown <= 0) {
         console.log("E");
+        eActive = 300;
         eCooldown = 1000;
       } else {
         console.log("E on Cooldown");
@@ -245,18 +267,22 @@ function create() {
   this.input.keyboard.on(
     "keydown_R",
     function (event) {
-      if (rCooldown <= 0) {
-        console.log("R");
-        rActive = 800;
+      if (rCooldown <= 0 || (rActive > 0 && rCharges > 0)) {
+        console.log(rCharges);
+        if (rCharges == 3) {
+          rActive = 800;
+          rCooldown = 3000;
+        }
 
         if (rActive > 0 && rCharges > 0) {
+          //if ()
           rCharges -= 1;
-          player.disableBody(true, true);
-          player = this.physics.add.sprite(mouse.x, mouse.y, "player");
-          player.
+          player.x = mouse.x;
+          player.y = mouse.y;
+          
+          //make the player stay still
           moving = false;
-        } else {
-          rCooldown = 2200;
+          player.setVelocity(0);
         }
       } else {
         console.log("R on Cooldown");
@@ -280,8 +306,9 @@ function cooldowns() {
   wCooldown -= 1;
   eCooldown -= 1;
   rCooldown -= 1;
-  qActive -= 1;
+  eActive -= 1;
   rActive -= 1;
+  wActive -= 1;
   inv -= 1;
 
   if (rCooldown <= 0) {
@@ -347,7 +374,7 @@ function playerMove() {
 
 // Moves enemies
 function moveEnemies() {
-  if (qActive <= 0) {
+  if (eActive <= 0) {
     enemies.forEach(function (enemy) {
       enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
     });
@@ -426,7 +453,8 @@ function initTerrainMatrix() {
 function initVariables() {
   enemies = [];
   Scene = this;
-  qActive = 0;
+  eActive = 0;
+  wActive = 0;
   rActive = 0;
   rCharges = 3;
   cooldown = 0;
@@ -448,6 +476,57 @@ function initVariables() {
 function addBlock(group, x, y) {
   group.create(x * BLOCK_SIZE + 8, y * BLOCK_SIZE + 8, "ground");
   terrainMatrix[x][y] = true;
+}
+
+function fireballHit(fireball, enemy) {
+  fireball.disableBody(true, true);
+  const DistanceBetween = Phaser.Math.Distance.Between;
+
+  const found = enemies.find(function (e) {
+    return e.enemy == enemy;
+  });
+
+  found.hp -= 2;
+
+  //minus 3 health for enemies around
+  for (let i = 0; i < enemies.length; i++) {
+
+    if (DistanceBetween(fireball.x, fireball.y, enemies[i].enemy.x, enemies[i].enemy.y) < 75) {
+      enemies[i].hp -= 1;
+    }
+    
+    //check if each enemy is dead
+    if (enemies[i].hp <= 0) {
+      enemies[i].enemy.disableBody(true, true);
+      enemyCount -= 1;
+      if (enemyCount == 0) {
+        this.scene.start("win");
+      }
+    }
+  }
+}
+
+function mineTrip(mine, player) {
+  if (wActive <= 0) {
+    mine.disableBody(true, true);
+    const DistanceBetween = Phaser.Math.Distance.Between;
+
+    //minus 3 health for enemies around
+    for (let i = 0; i < enemies.length; i++) {
+      if (DistanceBetween(mine.x, mine.y, enemies[i].enemy.x, enemies[i].enemy.y) < 150) {
+        enemies[i].hp -= 3;
+      }
+      
+      //check if each enemy is dead
+      if (enemies[i].hp <= 0) {
+        enemies[i].enemy.disableBody(true, true);
+        enemyCount -= 1;
+        if (enemyCount == 0) {
+          this.scene.start("win");
+        }
+      }
+    }
+  }
 }
 
 function hitEnemy(bullet, enemy) {
