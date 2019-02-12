@@ -275,14 +275,13 @@ function create() {
         }
 
         if (rActive > 0 && rCharges > 0) {
-          //if ()
-          rCharges -= 1;
-          player.x = mouse.x;
-          player.y = mouse.y;
+            rCharges -= 1;
+            player.x = mouse.x;
+            player.y = mouse.y;
           
-          //make the player stay still
-          moving = false;
-          player.setVelocity(0);
+            //make the player stay still
+            moving = false;
+            player.setVelocity(0);
         }
       } else {
         console.log("R on Cooldown");
@@ -513,7 +512,7 @@ function mineTrip(mine, player) {
 
     //minus 3 health for enemies around
     for (let i = 0; i < enemies.length; i++) {
-      if (DistanceBetween(mine.x, mine.y, enemies[i].enemy.x, enemies[i].enemy.y) < 150) {
+      if (DistanceBetween(mine.x, mine.y, enemies[i].enemy.x, enemies[i].enemy.y) < 125) {
         enemies[i].hp -= 3;
       }
       
