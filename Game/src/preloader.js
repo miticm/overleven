@@ -32,4 +32,8 @@ function preload() {
     frameWidth: 64,
     frameHeight: 64
   });
+  this.load.spritesheet("fireball", "assets/fireball.png", {
+    frameWidth: 64,
+    frameHeight: 64
+  });
 }
