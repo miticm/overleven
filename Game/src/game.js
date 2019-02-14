@@ -159,8 +159,8 @@ function create() {
       start: 1,
       end: 4
     }),
-    frameRate: 4,
-    repeat: -1
+    frameRate: 12,
+    repeat: 0
   });
 
   // Populate terrain matrix for AI
@@ -169,8 +169,14 @@ function create() {
   // Add grounds
   const grounds = this.physics.add.staticGroup();
 
-  addBlock.call(this, grounds, 2, 2);
-  addBlock.call(this, grounds, 2, 3);
+  addBlock.call(this, grounds, 9, 1);
+  addBlock.call(this, grounds, 5, 1);
+  addBlock.call(this, grounds, 9, 4);
+  addBlock.call(this, grounds, 5, 4);
+  addBlock.call(this, grounds, 9, 9);
+  addBlock.call(this, grounds, 5, 9);
+  addBlock.call(this, grounds, 9, 5);
+  addBlock.call(this, grounds, 5, 5);
   this.physics.add.collider(player, grounds);
   this.physics.add.overlap(player, grounds, stopPlayer, null, this);
 
