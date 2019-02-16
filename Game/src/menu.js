@@ -12,9 +12,9 @@ export const menu = new Phaser.Class({
 
   preload: function () {
     this.load.image("menu_background", "assets/background.jpg");
-    this.load.image("play_button", "assets/play_button.png");
-    this.load.image("leaderboard_button", "assets/leaderboard_button.png");
-    this.load.image("game_title", "assets/game_title.png");
+    this.load.image("play_button", "assets/start.png");
+    this.load.image("leaderboard_button", "assets/leaderboard.png");
+    this.load.image("game_title", "assets/overleven.png");
   },
 
   create: function () {
