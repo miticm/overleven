@@ -48,7 +48,8 @@ let eCooldown = 0;
 let rCooldown = 0;
 let playerSpeed = 140;
 let inv = 30;
-export let hp;
+export let hp = 20;
+export let gold = 0;
 
 // Enemy related variables
 let enemies = [];
@@ -470,7 +471,8 @@ function speedUp(player, item) {
 
 function increaseHealth(player, item) {
   item.disableBody(true, true);
-  console.log("increase health");
+  hp += 5;
+  Scene.events.emit("increaseHP");
 }
 
 // Initializes the terrain matrix for AI pathing

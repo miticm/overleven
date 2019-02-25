@@ -1,12 +1,13 @@
-import { hp } from "./game";
+import { hp, gold } from "./game";
 export class InfoScene extends Phaser.Scene {
   constructor() {
     super({ key: "info", active: false });
     this.hp = hp;
+    this.gold = gold;
   }
 
   create() {
-    let info = this.add.text(10, 10, `HP: ${this.hp}`, {
+    let info = this.add.text(10, 10, `HP: ${this.hp}\nGold: ${this.gold}`, {
       font: "22px Arial",
       fill: "#fff000"
     });
@@ -19,7 +20,15 @@ export class InfoScene extends Phaser.Scene {
       "reduceHP",
       function() {
         this.hp -= 1;
-        info.setText("HP: " + this.hp);
+        info.setText(`HP: ${this.hp}\nGold: ${this.gold}`);
+      },
+      this
+    );
+    game.events.on(
+      "increaseHP",
+      function() {
+        this.hp += 5;
+        info.setText(`HP: ${this.hp}\nGold: ${this.gold}`);
       },
       this
     );
