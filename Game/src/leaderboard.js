@@ -1,11 +1,20 @@
 import 'phaser';
 
-export const menu = new Phaser.Class({
+import {
+  HEIGHT,
+  WIDTH,
+  LEADERBOARD_NUM
+} from "./constants.js";
+
+let names = { };
+let texts = [ ];
+
+export const leaderboard = new Phaser.Class({
   Extends: Phaser.Scene,
 
   initialize: function menu() {
     Phaser.Scene.call(this, {
-      key: "menu"
+      key: "leaderboard"
     });
     window.GAME = this;
   },
@@ -22,18 +31,10 @@ export const menu = new Phaser.Class({
     background.setScale(1.7, 1.7);
     background.setOrigin(0, 0);
 
-    this.add
-      .sprite(
-        this.game.renderer.width / 2,
-        this.game.renderer.height / 2 - 100,
-        "game_title"
-      )
-      .setDepth(1);
-
     let playButton = this.add
       .sprite(
         this.game.renderer.width / 2,
-        this.game.renderer.height / 2 + 50,
+        this.game.renderer.height / 2 + 250,
         "play_button"
       )
       .setDepth(1);
@@ -50,32 +51,31 @@ export const menu = new Phaser.Class({
     });
 
     playButton.on("pointerup", () => {
-      this.scene.start("game");
+      this.scene.start("menu");
       //go to next scene
     });
 
-    let leaderboardButton = this.add
-      .sprite(
-        this.game.renderer.width / 2,
-        this.game.renderer.height / 2 + 130,
-        "leaderboard_button"
-      )
-      .setDepth(1);
-    leaderboardButton.setInteractive();
+    fetchLeaderboard.call(this);
 
-    leaderboardButton.on("pointerover", () => {
-      //make button bloom
-      leaderboardButton.setScale(1.5, 1.5);
-    });
-
-    leaderboardButton.on("pointerout", () => {
-      //reset button bloom
-      leaderboardButton.setScale(1, 1);
-    });
-
-    leaderboardButton.on("pointerup", () => {
-      //go to leaderboard page
-      this.scene.start("leaderboard");
-    });
-  }
+    for (let i = 0; i < LEADERBOARD_NUM; i++) {
+      texts[i] = this.add.text(WIDTH / 2 - 50, HEIGHT / 2 - 200 + i * 30, ``, {
+        font: "20px Arial",
+        fill: "#ffffff"
+      });
+    }
+  },
 });
+
+function fetchLeaderboard() {
+  const database = firebase.database();
+  
+  const thing = firebase.database().ref('/leaderboard').once('value').then(function(snapshot) {
+    names = (snapshot.val());
+    console.log(names);
+
+    const keys = Object.keys(names);
+    for (let i = 0; i < keys.length; i++) {
+      texts[i].setText(`${keys[i]}: ${names[keys[i]]}`);
+    }
+  });
+}

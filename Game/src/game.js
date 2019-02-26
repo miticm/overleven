@@ -205,24 +205,6 @@ function create() {
       mouseX = pointer.x;
       mouseY = pointer.y;
       moving = true;
-      //OLD CODE FOR SHOOTING
-      // if (cooldown <= 0) {
-      //   const bullet = this.physics.add.sprite(player.x, player.y, "bullet");
-      //   bullet
-      //     .enableBody(true, player.x, player.y, true, true)
-      //     .setVelocity(velocity.x, velocity.y);
-      //   cooldown = 20;
-      //   this.physics.add.overlap(bullet, grounds, breakGround, null, this);
-      //   for (let i = 0; i < enemies.length; i++) {
-      //     this.physics.add.overlap(
-      //       bullet,
-      //       enemies[i].enemy,
-      //       hitEnemy,
-      //       null,
-      //       this
-      //     );
-      //   }
-      // }
     },
     this
   );
