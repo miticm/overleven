@@ -71,11 +71,25 @@ function fetchLeaderboard() {
   
   const thing = firebase.database().ref('/leaderboard').once('value').then(function(snapshot) {
     names = (snapshot.val());
-    console.log(names);
 
+    // Sort the names by score
     const keys = Object.keys(names);
+
+    keys.sort(compareScores);
+
     for (let i = 0; i < keys.length; i++) {
+      if (i >= LEADERBOARD_NUM) {
+        break;
+      }
       texts[i].setText(`${keys[i]}: ${names[keys[i]]}`);
     }
   });
+}
+
+function compareScores(a,b) {
+  if (names[a] < names[b])
+    return 1;
+  if (names[a] > names[b])
+    return -1;
+  return 0;
 }
