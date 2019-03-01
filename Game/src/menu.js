@@ -75,6 +75,7 @@ export const menu = new Phaser.Class({
 
     leaderboardButton.on("pointerup", () => {
       //go to leaderboard page
+      this.scene.start("leaderboard");
     });
   }
 });

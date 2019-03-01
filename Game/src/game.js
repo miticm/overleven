@@ -51,7 +51,8 @@ let eCooldown = 0;
 let rCooldown = 0;
 let playerSpeed = 140;
 let inv = 30;
-export let hp;
+export let hp = 20;
+export let gold = 0;
 
 // Enemy related variables
 let enemies = [];
@@ -239,24 +240,6 @@ function create() {
       mouseX = pointer.x;
       mouseY = pointer.y;
       moving = true;
-      //OLD CODE FOR SHOOTING
-      // if (cooldown <= 0) {
-      //   const bullet = this.physics.add.sprite(player.x, player.y, "bullet");
-      //   bullet
-      //     .enableBody(true, player.x, player.y, true, true)
-      //     .setVelocity(velocity.x, velocity.y);
-      //   cooldown = 20;
-      //   this.physics.add.overlap(bullet, grounds, breakGround, null, this);
-      //   for (let i = 0; i < enemies.length; i++) {
-      //     this.physics.add.overlap(
-      //       bullet,
-      //       enemies[i].enemy,
-      //       hitEnemy,
-      //       null,
-      //       this
-      //     );
-      //   }
-      // }
     },
     this
   );
@@ -287,7 +270,7 @@ function create() {
         }
 
         console.log("Q");
-        qCooldown = 600;
+        qCooldown = 100;
       } else {
         console.log("Q on Cooldown");
       }
@@ -504,7 +487,8 @@ function speedUp(player, item) {
 
 function increaseHealth(player, item) {
   item.disableBody(true, true);
-  console.log("increase health");
+  hp += 5;
+  Scene.events.emit("increaseHP");
 }
 
 // Initializes the terrain matrix for AI pathing
@@ -568,15 +552,20 @@ function fireballHit(fireball, enemy) {
     ) {
       enemies[i].hp -= 1;
     }
+    checkEnemiesDeath(i);
+  }
+}
 
-    //check if each enemy is dead
-    if (enemies[i].hp <= 0) {
-      enemies[i].enemy.disableBody(true, true);
-      enemyCount -= 1;
-      if (enemyCount == 0) {
-        this.scene.remove("info");
-        this.scene.start("win");
-      }
+function checkEnemiesDeath(i) {
+  //check if each enemy is dead
+  if (enemies[i].hp <= 0) {
+    enemies[i].enemy.disableBody(true, true);
+    gold += 200;
+    Scene.events.emit("increaseGold");
+    enemyCount -= 1;
+    if (enemyCount == 0) {
+      Scene.scene.remove("info");
+      Scene.scene.start("win");
     }
   }
 }
@@ -600,15 +589,7 @@ function mineTrip(mine, player) {
         enemies[i].hp -= 3;
       }
 
-      //check if each enemy is dead
-      if (enemies[i].hp <= 0) {
-        enemies[i].enemy.disableBody(true, true);
-        enemyCount -= 1;
-        if (enemyCount == 0) {
-          this.scene.remove("info");
-          this.scene.start("win");
-        }
-      }
+      checkEnemiesDeath(i);
     }
   }
 }
