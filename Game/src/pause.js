@@ -1,25 +1,25 @@
-// Lose scene
+// Pause scene
 import 'phaser';
 import {
   WIDTH,
   HEIGHT
 } from './constants.js';
 
-export const lose = new Phaser.Class({
+export const pause = new Phaser.Class({
   Extends: Phaser.Scene,
-  initialize: function lose() {
+  initialize: function pause() {
     Phaser.Scene.call(this, {
-      key: "lose"
+      key: "pause"
     });
   },
 
   preload: function () {
     this.load.image("menu_button", "assets/menu_button.png");
-    this.load.image("retry_button", "assets/retry_button.png");
+    this.load.image("resume_button", "assets/resume_button.png");
   },
 
   create: function () {
-    const text = this.add.text(WIDTH / 2, HEIGHT / 2, "You lose...", {
+    const text = this.add.text(WIDTH / 2, HEIGHT / 2, "PAUSED", {
       fontSize: "32px"
     });
     let menuButton = this.add
@@ -45,33 +45,34 @@ export const lose = new Phaser.Class({
       this.scene.start("menu");
       this.scene.stop('game');
       this.scene.remove('info');
+      //enemies = [];
+      //terrainMatrix = undefined;
       //go to next scene
     });
-    let retryButton = this.add
+    let playButton = this.add
       .sprite(
         this.game.renderer.width - 725,
         this.game.renderer.height - 100,
-        "retry_button"
+        "resume_button"
       )
       .setDepth(1);
-    retryButton.setScale(0.15, 0.15);
-    retryButton.setInteractive();
+    playButton.setScale(0.15, 0.15);
+    playButton.setInteractive();
 
-    retryButton.on("pointerover", () => {
+    playButton.on("pointerover", () => {
       //make play button bloom
-      retryButton.setScale(0.25, 0.25);
+      playButton.setScale(0.25, 0.25);
     });
-    retryButton.on("pointerout", () => {
+    playButton.on("pointerout", () => {
       //reset button bloom
-      retryButton.setScale(0.15, 0.15);
+      playButton.setScale(0.15, 0.15);
     });
 
-    retryButton.on(
+    playButton.on(
       "pointerup",
       function (event) {
-        this.scene.start("game");
-        enemies = [];
-        terrainMatrix = undefined;
+        this.scene.resume('game');
+        this.scene.stop();
       },
       this
     );

@@ -23,6 +23,9 @@ export const game = new Phaser.Class({
     this.track;
     this.text;
   },
+  preload: function () {
+    this.load.image("pause_button", "assets/pause_button.png");
+  },
   create: create,
   update: update
 });
@@ -65,6 +68,37 @@ function create() {
   const velocity = new Phaser.Math.Vector2();
   const line = new Phaser.Geom.Line();
   initVariables.call(this);
+
+  //add pauseButton
+  let pauseButton = this.add
+      .sprite(
+        this.game.renderer.width - 50,
+        this.game.renderer.height - 50,
+        "pause_button"
+      )
+      .setDepth(1);
+    pauseButton.setScale(0.1, 0.1);
+    pauseButton.setInteractive();
+
+    pauseButton.on("pointerover", () => {
+      //make play button bloom
+      pauseButton.setScale(0.2, 0.2);
+    });
+    pauseButton.on("pointerout", () => {
+      //reset button bloom
+      pauseButton.setScale(0.1, 0.1);
+    });
+
+    pauseButton.on("pointerup", () => {
+      this.scene.launch('pause');
+      this.scene.pause('game');
+
+      // enemies = [];
+      // terrainMatrix = undefined;
+      //go to next scene
+    });
+
+
 
   // Add background
   this.add.image(WIDTH / 2, HEIGHT / 2, "grass");

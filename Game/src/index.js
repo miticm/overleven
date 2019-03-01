@@ -7,6 +7,7 @@ import { win } from "./win.js";
 import { preloader } from "./preloader.js";
 import { lose } from "./lose.js";
 import { game } from "./game.js";
+import {pause } from "./pause.js";
 
 // Config and set up the game, in general don't mess with
 var config = {
@@ -14,7 +15,7 @@ var config = {
   parent: "phaser-example",
   width: WIDTH,
   height: HEIGHT,
-  scene: [preloader, menu, game, win, lose],
+  scene: [preloader, menu, game, win, lose, pause],
   physics: {
     default: "arcade"
   }
