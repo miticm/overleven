@@ -24,10 +24,20 @@ export class InfoScene extends Phaser.Scene {
       },
       this
     );
+
     game.events.on(
       "increaseHP",
       function() {
         this.hp += 5;
+        info.setText(`HP: ${this.hp}\nGold: ${this.gold}`);
+      },
+      this
+    );
+
+    game.events.on(
+      "increaseGold",
+      function() {
+        this.gold += 200;
         info.setText(`HP: ${this.hp}\nGold: ${this.gold}`);
       },
       this

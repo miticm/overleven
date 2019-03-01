@@ -254,7 +254,7 @@ function create() {
         }
 
         console.log("Q");
-        qCooldown = 600;
+        qCooldown = 100;
       } else {
         console.log("Q on Cooldown");
       }
@@ -536,15 +536,20 @@ function fireballHit(fireball, enemy) {
     ) {
       enemies[i].hp -= 1;
     }
+    checkEnemiesDeath(i);
+  }
+}
 
-    //check if each enemy is dead
-    if (enemies[i].hp <= 0) {
-      enemies[i].enemy.disableBody(true, true);
-      enemyCount -= 1;
-      if (enemyCount == 0) {
-        this.scene.remove("info");
-        this.scene.start("win");
-      }
+function checkEnemiesDeath(i) {
+  //check if each enemy is dead
+  if (enemies[i].hp <= 0) {
+    enemies[i].enemy.disableBody(true, true);
+    gold += 200;
+    Scene.events.emit("increaseGold");
+    enemyCount -= 1;
+    if (enemyCount == 0) {
+      this.scene.remove("info");
+      this.scene.start("win");
     }
   }
 }
@@ -568,15 +573,7 @@ function mineTrip(mine, player) {
         enemies[i].hp -= 3;
       }
 
-      //check if each enemy is dead
-      if (enemies[i].hp <= 0) {
-        enemies[i].enemy.disableBody(true, true);
-        enemyCount -= 1;
-        if (enemyCount == 0) {
-          this.scene.remove("info");
-          this.scene.start("win");
-        }
-      }
+      checkEnemiesDeath(i);
     }
   }
 }
