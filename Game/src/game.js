@@ -37,11 +37,11 @@ let moving = false;
 let player;
 let mouse;
 let controls;
+let cooldown = 0;
 let eActive = 0;
 let wActive = 0;
 let rActive = 0;
 let rCharges = 3;
-let cooldown = 0;
 let qCooldown = 0;
 let wCooldown = 0;
 let eCooldown = 0;
@@ -55,7 +55,7 @@ export let gold = 0;
 let enemies = [];
 let terrainMatrix;
 let enemyCount = 2;
-let waveCount = 0;
+let waveCount = 1;
 
 // Function is ran at start of game, initialize all sprites and math
 function create() {
@@ -486,7 +486,7 @@ function initVariables() {
   mouseX = 0;
   mouseY = 0;
   moving = false;
-  waveCount = 0;
+  waveCount = 1;
   enemyCount = 2;
 }
 
@@ -523,15 +523,52 @@ function fireballHit(fireball, enemy) {
 }
 
 function checkEnemiesDeath(i) {
+  let enemy;
   //check if each enemy is dead
   if (enemies[i].hp <= 0) {
     enemies[i].enemy.disableBody(true, true);
+    enemies.splice(i, 1);
     gold += 200;
     Scene.events.emit("increaseGold");
     enemyCount -= 1;
+    console.log(enemies.length);
     if (enemyCount == 0) {
-      Scene.scene.remove("info");
-      Scene.scene.start("win");
+      waveCount++;
+
+      //add enemies for next wave
+      for (let i = 0; i < waveCount + 1; i++) {
+        console.log("adding another Enemy");
+        //spawn top
+        if (i % 4 == 0) {
+          enemy = addEnemy.call(Scene, getRandomInt(832), 64);
+          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+        }
+        //spawn bottom
+        else if (i % 4 == 1) {
+          enemy = addEnemy.call(Scene, getRandomInt(832), 576);
+          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+        }
+        //spawn left
+        else if (i % 4 == 2) {
+          enemy = addEnemy.call(Scene, 64, getRandomInt(576));
+          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+        }
+        //spawn right
+        else {
+          enemy = addEnemy.call(Scene, 832, getRandomInt(576));
+          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+        }
+        if (enemies.length > 1) {
+          for (let j = 0; j < enemies.length - 1; j++) {
+            console.log("In collider loop");
+            Scene.physics.add.collider(enemies[j].enemy, enemy);
+          }
+        }
+        enemyCount++;
+      }
+
+      //Scene.scene.remove("info");
+      //Scene.scene.start("win");
     }
   }
 }
@@ -595,10 +632,11 @@ function addEnemy(x, y) {
   // console.log(enemy);
   enemies.push({
     enemy: enemy,
-    hp: 2,
-    speed: 50
+    hp: (waveCount * 2),
+    speed: (50 + (waveCount * 2))
   });
   enemy.anims.play("enemy", true);
+  console.log(enemies);
   return enemy;
 }
 
