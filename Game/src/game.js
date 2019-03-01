@@ -530,8 +530,8 @@ function checkEnemiesDeath(i) {
     Scene.events.emit("increaseGold");
     enemyCount -= 1;
     if (enemyCount == 0) {
-      this.scene.remove("info");
-      this.scene.start("win");
+      Scene.scene.remove("info");
+      Scene.scene.start("win");
     }
   }
 }
