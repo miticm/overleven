@@ -54,5 +54,14 @@ export class InfoScene extends Phaser.Scene {
       },
       this
     );
+
+    shop.events.on(
+      "goldBySpeed",
+      function() {
+        this.gold -= 100;
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+      },
+      this
+    );
   }
 }

@@ -52,6 +52,7 @@ let wCooldown = 0;
 let eCooldown = 0;
 let rCooldown = 0;
 let playerSpeed = 140;
+let maxPlayerSpeed = 400;
 let inv = 30;
 export let hp = 20;
 export let gold = 0;
@@ -72,6 +73,8 @@ function create() {
   const velocity = new Phaser.Math.Vector2();
   const line = new Phaser.Geom.Line();
   initVariables.call(this);
+
+  let shopScence = this.scene.get("shop");
 
   //add pauseButton
   let pauseButton = this.add
@@ -130,6 +133,24 @@ function create() {
       // terrainMatrix = undefined;
       //go to next scene
     });
+
+    //update variables in game
+    shopScence.events.on(
+      "goldByShield",
+      function() {
+        gold -= 200;
+        maxHealth += 10
+      },
+      this
+    );
+    shopScence.events.on(
+      "goldBySpeed",
+      function() {
+        gold -= 100;
+        maxPlayerSpeed += 100;
+      },
+      this
+    );
 
 
 
@@ -514,7 +535,9 @@ function upgrageAttributes(id, item) {
 
 function speedUp(player, item) {
   item.disableBody(true, true);
-  playerSpeed += 100;
+  if(playerSpeed < maxPlayerSpeed){
+    playerSpeed += 50;
+  }
 }
 
 function increaseHealth(player, item) {
