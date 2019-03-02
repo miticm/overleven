@@ -2,6 +2,7 @@
 export const HEIGHT = 640;
 export const WIDTH = 896;
 export const BLOCK_SIZE = 64;
+export const LEADERBOARD_NUM = 10;
 
 // Computed
 export const BLOCK_WIDTH = Math.floor(WIDTH / BLOCK_SIZE);

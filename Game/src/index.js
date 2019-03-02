@@ -1,25 +1,14 @@
 import "phaser";
-import {
-  HEIGHT,
-  WIDTH
-} from "./constants.js";
+import { HEIGHT, WIDTH } from "./constants.js";
 
 // Scenes
-import {
-  menu
-} from './menu.js';
-import {
-  win
-} from './win.js';
-import {
-  preloader
-} from './preloader.js';
-import {
-  lose
-} from './lose.js';
-import {
-  game
-} from './game.js';
+import { menu } from "./menu.js";
+import { win } from "./win.js";
+import { preloader } from "./preloader.js";
+import { lose } from "./lose.js";
+import { game } from "./game.js";
+import {pause } from "./pause.js";
+import { leaderboard } from "./leaderboard.js";
 
 // Config and set up the game, in general don't mess with
 var config = {
@@ -27,7 +16,7 @@ var config = {
   parent: "phaser-example",
   width: WIDTH,
   height: HEIGHT,
-  scene: [preloader, menu, game, win, lose],
+  scene: [preloader, menu, leaderboard, game, win, pause, lose],
   physics: {
     default: "arcade"
   }

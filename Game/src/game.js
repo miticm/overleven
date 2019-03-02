@@ -1,12 +1,7 @@
 // Game scene
-import 'phaser';
-import {
-  enemyMovement
-} from "./enemy-ai.js";
-import {
-  currentBlock,
-  getRandomInt
-} from "./generic-functions.js";
+import "phaser";
+import { enemyMovement } from "./enemy-ai.js";
+import { currentBlock, getRandomInt } from "./generic-functions.js";
 import {
   HEIGHT,
   WIDTH,
@@ -14,6 +9,7 @@ import {
   BLOCK_WIDTH,
   BLOCK_HEIGHT
 } from "./constants.js";
+import { InfoScene } from "./info";
 
 export const game = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -26,6 +22,9 @@ export const game = new Phaser.Class({
     this.controls;
     this.track;
     this.text;
+  },
+  preload: function () {
+    this.load.image("pause_button", "assets/pause_button.png");
   },
   create: create,
   update: update
@@ -52,7 +51,8 @@ let eCooldown = 0;
 let rCooldown = 0;
 let playerSpeed = 140;
 let inv = 30;
-let hp = 3;
+export let hp = 20;
+export let gold = 0;
 
 // Enemy related variables
 let enemies = [];
@@ -70,6 +70,37 @@ function create() {
   const line = new Phaser.Geom.Line();
   initVariables.call(this);
 
+  //add pauseButton
+  let pauseButton = this.add
+      .sprite(
+        this.game.renderer.width - 50,
+        this.game.renderer.height - 50,
+        "pause_button"
+      )
+      .setDepth(1);
+    pauseButton.setScale(0.1, 0.1);
+    pauseButton.setInteractive();
+
+    pauseButton.on("pointerover", () => {
+      //make play button bloom
+      pauseButton.setScale(0.2, 0.2);
+    });
+    pauseButton.on("pointerout", () => {
+      //reset button bloom
+      pauseButton.setScale(0.1, 0.1);
+    });
+
+    pauseButton.on("pointerup", () => {
+      this.scene.launch('pause');
+      this.scene.pause('game');
+
+      // enemies = [];
+      // terrainMatrix = undefined;
+      //go to next scene
+    });
+
+
+
   // Add background
   this.add.image(WIDTH / 2, HEIGHT / 2, "grass");
 
@@ -84,10 +115,12 @@ function create() {
   // player animations
   this.anims.create({
     key: "idle",
-    frames: [{
-      key: "player",
-      frame: 0
-    }],
+    frames: [
+      {
+        key: "player",
+        frame: 0
+      }
+    ],
     frameRate: 0
   });
 
@@ -159,8 +192,8 @@ function create() {
       start: 1,
       end: 4
     }),
-    frameRate: 4,
-    repeat: -1
+    frameRate: 12,
+    repeat: 0
   });
 
   // Populate terrain matrix for AI
@@ -169,8 +202,14 @@ function create() {
   // Add grounds
   const grounds = this.physics.add.staticGroup();
 
-  addBlock.call(this, grounds, 2, 2);
-  addBlock.call(this, grounds, 2, 3);
+  addBlock.call(this, grounds, 9, 1);
+  addBlock.call(this, grounds, 5, 1);
+  addBlock.call(this, grounds, 9, 4);
+  addBlock.call(this, grounds, 5, 4);
+  addBlock.call(this, grounds, 9, 9);
+  addBlock.call(this, grounds, 5, 9);
+  addBlock.call(this, grounds, 9, 5);
+  addBlock.call(this, grounds, 5, 5);
   this.physics.add.collider(player, grounds);
   this.physics.add.overlap(player, grounds, stopPlayer, null, this);
 
@@ -187,7 +226,7 @@ function create() {
 
   this.input.on(
     "pointermove",
-    function (pointer) {
+    function(pointer) {
       mouse = pointer;
       const angle = BetweenPoints(player, pointer);
       SetToAngle(line, player.x, player.y, angle, 128);
@@ -197,56 +236,41 @@ function create() {
   );
   this.input.on(
     "pointerup",
-    function (pointer) {
+    function(pointer) {
       mouseX = pointer.x;
       mouseY = pointer.y;
       moving = true;
-      //OLD CODE FOR SHOOTING
-      // if (cooldown <= 0) {
-      //   const bullet = this.physics.add.sprite(player.x, player.y, "bullet");
-      //   bullet
-      //     .enableBody(true, player.x, player.y, true, true)
-      //     .setVelocity(velocity.x, velocity.y);
-      //   cooldown = 20;
-      //   this.physics.add.overlap(bullet, grounds, breakGround, null, this);
-      //   for (let i = 0; i < enemies.length; i++) {
-      //     this.physics.add.overlap(
-      //       bullet,
-      //       enemies[i].enemy,
-      //       hitEnemy,
-      //       null,
-      //       this
-      //     );
-      //   }
-      // }
     },
     this
   );
   this.input.keyboard.on(
-    'keydown_Q',
-    function (event) {
+    "keydown_Q",
+    function(event) {
       if (qCooldown <= 0) {
-      //create the fireball
-        const fireball = this.physics.add.sprite(player.x, player.y, "fireball");
+        //create the fireball
+        const fireball = this.physics.add.sprite(
+          player.x,
+          player.y,
+          "fireball"
+        );
         fireball
-        .enableBody(true, player.x, player.y, true, true)
-        .setVelocity(velocity.x, velocity.y);
+          .enableBody(true, player.x, player.y, true, true)
+          .setVelocity(velocity.x, velocity.y);
 
         this.physics.add.overlap(fireball, grounds, breakGround, null, this);
         fireball.anims.play("fireball", true);
         for (let i = 0; i < enemies.length; i++) {
-        this.physics.add.overlap(
-        fireball,
-        enemies[i].enemy,
-        fireballHit,
-        null,
-        this
-        );
-      }
-
+          this.physics.add.overlap(
+            fireball,
+            enemies[i].enemy,
+            fireballHit,
+            null,
+            this
+          );
+        }
 
         console.log("Q");
-        qCooldown = 600;
+        qCooldown = 100;
       } else {
         console.log("Q on Cooldown");
       }
@@ -255,15 +279,14 @@ function create() {
   );
   this.input.keyboard.on(
     "keydown_W",
-    function (event) {
+    function(event) {
       if (wCooldown <= 0) {
-              //create the Mine
-              const mine = this.physics.add.sprite(player.x, player.y, "mine");
-              mine
-              .enableBody(true, player.x, player.y, true, true)
+        //create the Mine
+        const mine = this.physics.add.sprite(player.x, player.y, "mine");
+        mine.enableBody(true, player.x, player.y, true, true);
 
-              this.physics.add.overlap(mine, grounds, breakGround, null, this);
-              this.physics.add.overlap(mine, player, mineTrip, null, this);
+        this.physics.add.overlap(mine, grounds, breakGround, null, this);
+        this.physics.add.overlap(mine, player, mineTrip, null, this);
 
         console.log("W");
         wCooldown = 1000;
@@ -276,7 +299,7 @@ function create() {
   );
   this.input.keyboard.on(
     "keydown_E",
-    function (event) {
+    function(event) {
       if (eCooldown <= 0) {
         console.log("E");
         eActive = 300;
@@ -289,7 +312,7 @@ function create() {
   );
   this.input.keyboard.on(
     "keydown_R",
-    function (event) {
+    function(event) {
       if (rCooldown <= 0 || (rActive > 0 && rCharges > 0)) {
         console.log(rCharges);
         if (rCharges == 3) {
@@ -298,13 +321,13 @@ function create() {
         }
 
         if (rActive > 0 && rCharges > 0) {
-            rCharges -= 1;
-            player.x = mouse.x;
-            player.y = mouse.y;
+          rCharges -= 1;
+          player.x = mouse.x;
+          player.y = mouse.y;
 
-            //make the player stay still
-            moving = false;
-            player.setVelocity(0);
+          //make the player stay still
+          moving = false;
+          player.setVelocity(0);
         }
       } else {
         console.log("R on Cooldown");
@@ -312,6 +335,8 @@ function create() {
     },
     this
   );
+
+  this.scene.add("info", InfoScene, true);
 }
 
 // Function is ran every frame to update the game
@@ -340,13 +365,14 @@ function cooldowns() {
 
 // Moves the player
 function playerMove() {
-
   if (moving) {
-
     if (player.x == mouseX && player.y == mouseY) {
       moving = false;
     } else {
-      const tempXSpeed = Math.abs(mouseX - player.x) < playerSpeed ? Math.abs(mouseX - player.x) : playerSpeed;
+      const tempXSpeed =
+        Math.abs(mouseX - player.x) < playerSpeed
+          ? Math.abs(mouseX - player.x)
+          : playerSpeed;
       if (player.x > mouseX) {
         player.setVelocityX(-tempXSpeed);
         player.anims.play("left", true);
@@ -357,7 +383,10 @@ function playerMove() {
         player.setVelocityX(0);
       }
 
-      const tempYSpeed = Math.abs(mouseY - player.y) < playerSpeed ? Math.abs(mouseY - player.y) : playerSpeed;
+      const tempYSpeed =
+        Math.abs(mouseY - player.y) < playerSpeed
+          ? Math.abs(mouseY - player.y)
+          : playerSpeed;
       if (player.y > mouseY) {
         player.setVelocityY(-tempYSpeed);
         player.anims.play("up", true);
@@ -397,11 +426,11 @@ function playerMove() {
 // Moves enemies
 function moveEnemies() {
   if (eActive <= 0) {
-    enemies.forEach(function (enemy) {
+    enemies.forEach(function(enemy) {
       enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
     });
   } else {
-    enemies.forEach(function (enemy) {
+    enemies.forEach(function(enemy) {
       enemyMovement(enemy.enemy, player, terrainMatrix, 0);
     });
   }
@@ -458,7 +487,8 @@ function speedUp(player, item) {
 
 function increaseHealth(player, item) {
   item.disableBody(true, true);
-  console.log("increase health");
+  hp += 5;
+  Scene.events.emit("increaseHP");
 }
 
 // Initializes the terrain matrix for AI pathing
@@ -486,7 +516,7 @@ function initVariables() {
   rCooldown = 0;
   playerSpeed = 140;
   inv = 30;
-  hp = 3;
+  hp = 20;
   mouseX = 0;
   mouseY = 0;
   moving = false;
@@ -504,7 +534,7 @@ function fireballHit(fireball, enemy) {
   fireball.disableBody(true, true);
   const DistanceBetween = Phaser.Math.Distance.Between;
 
-  const found = enemies.find(function (e) {
+  const found = enemies.find(function(e) {
     return e.enemy == enemy;
   });
 
@@ -512,18 +542,30 @@ function fireballHit(fireball, enemy) {
 
   //minus 3 health for enemies around
   for (let i = 0; i < enemies.length; i++) {
-
-    if (DistanceBetween(fireball.x, fireball.y, enemies[i].enemy.x, enemies[i].enemy.y) < 75) {
+    if (
+      DistanceBetween(
+        fireball.x,
+        fireball.y,
+        enemies[i].enemy.x,
+        enemies[i].enemy.y
+      ) < 75
+    ) {
       enemies[i].hp -= 1;
     }
+    checkEnemiesDeath(i);
+  }
+}
 
-    //check if each enemy is dead
-    if (enemies[i].hp <= 0) {
-      enemies[i].enemy.disableBody(true, true);
-      enemyCount -= 1;
-      if (enemyCount == 0) {
-        this.scene.start("win");
-      }
+function checkEnemiesDeath(i) {
+  //check if each enemy is dead
+  if (enemies[i].hp <= 0) {
+    enemies[i].enemy.disableBody(true, true);
+    gold += 200;
+    Scene.events.emit("increaseGold");
+    enemyCount -= 1;
+    if (enemyCount == 0) {
+      Scene.scene.remove("info");
+      Scene.scene.start("win");
     }
   }
 }
@@ -536,18 +578,18 @@ function mineTrip(mine, player) {
 
     //minus 3 health for enemies around
     for (let i = 0; i < enemies.length; i++) {
-      if (DistanceBetween(mine.x, mine.y, enemies[i].enemy.x, enemies[i].enemy.y) < 125) {
+      if (
+        DistanceBetween(
+          mine.x,
+          mine.y,
+          enemies[i].enemy.x,
+          enemies[i].enemy.y
+        ) < 125
+      ) {
         enemies[i].hp -= 3;
       }
 
-      //check if each enemy is dead
-      if (enemies[i].hp <= 0) {
-        enemies[i].enemy.disableBody(true, true);
-        enemyCount -= 1;
-        if (enemyCount == 0) {
-          this.scene.start("win");
-        }
-      }
+      checkEnemiesDeath(i);
     }
   }
 }
@@ -555,7 +597,7 @@ function mineTrip(mine, player) {
 function hitEnemy(bullet, enemy) {
   bullet.disableBody(true, true);
   console.log(bullet);
-  const found = enemies.find(function (e) {
+  const found = enemies.find(function(e) {
     return e.enemy == enemy;
   });
   console.log(found);
@@ -564,6 +606,7 @@ function hitEnemy(bullet, enemy) {
     enemy.disableBody(true, true);
     enemyCount -= 1;
     if (enemyCount == 0) {
+      this.scene.remove("info");
       this.scene.start("win");
     }
   }
@@ -572,7 +615,9 @@ function hitEnemy(bullet, enemy) {
 function hitPlayer(player, enemy) {
   if (inv <= 0) {
     hp -= 1;
+    this.events.emit("reduceHP");
     if (hp <= 0) {
+      this.scene.remove("info");
       this.scene.start("lose");
     }
     inv = 30;
@@ -581,7 +626,7 @@ function hitPlayer(player, enemy) {
 
 function addEnemy(x, y) {
   const enemy = this.physics.add.sprite(x, y, "enemy");
-  console.log(enemy);
+  // console.log(enemy);
   enemies.push({
     enemy: enemy,
     hp: 2,
