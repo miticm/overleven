@@ -25,6 +25,8 @@ export const game = new Phaser.Class({
   },
   preload: function () {
     this.load.image("pause_button", "assets/pause_button.png");
+    this.load.image("shop_button", "assets/shop_button.png");
+
   },
   create: create,
   update: update
@@ -53,6 +55,7 @@ let playerSpeed = 140;
 let inv = 30;
 export let hp = 20;
 export let gold = 0;
+export let maxHealth = 20;
 
 // Enemy related variables
 let enemies = [];
@@ -92,6 +95,35 @@ function create() {
 
     pauseButton.on("pointerup", () => {
       this.scene.launch('pause');
+      this.scene.pause('game');
+
+      // enemies = [];
+      // terrainMatrix = undefined;
+      //go to next scene
+    });
+
+    //add shop button
+    let shopButton = this.add
+      .sprite(
+        this.game.renderer.width - 100,
+        this.game.renderer.height - 50,
+        "shop_button"
+      )
+      .setDepth(1);
+    shopButton.setScale(0.1, 0.1);
+    shopButton.setInteractive();
+
+    shopButton.on("pointerover", () => {
+      //make play button bloom
+      shopButton.setScale(0.2, 0.2);
+    });
+    shopButton.on("pointerout", () => {
+      //reset button bloom
+      shopButton.setScale(0.1, 0.1);
+    });
+
+    shopButton.on("pointerup", () => {
+      this.scene.launch('shop');
       this.scene.pause('game');
 
       // enemies = [];
@@ -487,8 +519,14 @@ function speedUp(player, item) {
 
 function increaseHealth(player, item) {
   item.disableBody(true, true);
-  hp += 5;
-  Scene.events.emit("increaseHP");
+  if(hp < maxHealth){
+    if(hp >= maxHealth - 5){
+      hp = maxHealth
+    } else {
+      hp += 5;
+    }
+    Scene.events.emit("increaseHP");
+  }
 }
 
 // Initializes the terrain matrix for AI pathing
