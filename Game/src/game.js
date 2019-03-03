@@ -538,7 +538,6 @@ function checkEnemiesDeath(i) {
         }
         if (enemies.length > 1) {
           for (let j = 0; j < enemies.length - 1; j++) {
-            console.log("In collider loop");
             Scene.physics.add.collider(enemies[j].enemy, newEnemy);
           }
         }
