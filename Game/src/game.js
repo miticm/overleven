@@ -57,6 +57,9 @@ let terrainMatrix;
 let enemyCount = 2;
 let waveCount = 1;
 
+//movement variable
+var target = new Phaser.Math.Vector2();
+
 // Function is ran at start of game, initialize all sprites and math
 function create() {
   // Calculations for shooting angle
@@ -152,14 +155,15 @@ function create() {
     repeat: -1
   });
 
+  //Mine explosion animation
   this.anims.create({
     key: "explode",
     frames: this.anims.generateFrameNumbers("mine", {
-      start: 1,
+      start: 0,
       end: 4
     }),
     frameRate: 12,
-    repeat: 0
+    hideOnComplete: true
   });
 
   // Populate terrain matrix for AI
@@ -201,11 +205,12 @@ function create() {
     this
   );
   this.input.on(
-    "pointerup",
+    "pointerdown",
     function(pointer) {
-      mouseX = pointer.x;
-      mouseY = pointer.y;
-      moving = true;
+      target.x = pointer.x;
+      target.y = pointer.y;
+
+      Scene.physics.moveToObject(player, target, playerSpeed);
     },
     this
   );
@@ -331,16 +336,40 @@ function cooldowns() {
 
 // Moves the player
 function playerMove() {
-  if (moving) {
-    if (player.x == mouseX && player.y == mouseY) {
+  //distance tolerance
+  var distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
+
+  if (player.body.speed > 0) {
+    /*if (player.x == mouseX && player.y == mouseY) {
       moving = false;
-    } else {
-      const tempXSpeed =
-        Math.abs(mouseX - player.x) < playerSpeed
-          ? Math.abs(mouseX - player.x)
-          : playerSpeed;
-      if (player.x > mouseX) {
-        player.setVelocityX(-tempXSpeed);
+    } else {*/
+
+      //distance tolerance
+      //var distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
+
+      if (distance < 4) {
+        player.setVelocity(0);
+      }
+      else if ((player.body.velocity.x == 0 || player.body.velocity.y == 0) && target.x != player.body.velocity.x && target.y != player.body.velocity.y) {
+        player.setVelocity(0);
+      }
+      
+      //animations
+      if (player.body.velocity.x > 0) {
+        player.anims.play("right", true);
+      }
+      else if (player.body.velocity.x < 0) {
+        player.anims.play("left", true);
+      }
+      if (player.body.velocity.y > 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
+        player.anims.play("down", true);
+      }
+      else if (player.body.velocity.y < 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
+        player.anims.play("up", true);
+      }
+
+      /*if (player.x > mouseX) {
+        game.physics.arcade.setVelocityX(-tempXSpeed);
         player.anims.play("left", true);
       } else if (player.x < mouseX) {
         player.setVelocityX(tempXSpeed);
@@ -349,10 +378,8 @@ function playerMove() {
         player.setVelocityX(0);
       }
 
-      const tempYSpeed =
-        Math.abs(mouseY - player.y) < playerSpeed
-          ? Math.abs(mouseY - player.y)
-          : playerSpeed;
+      const tempYSpeed = playerSpeed;
+
       if (player.y > mouseY) {
         player.setVelocityY(-tempYSpeed);
         player.anims.play("up", true);
@@ -361,8 +388,11 @@ function playerMove() {
         player.anims.play("down", true);
       } else {
         player.setVelocityY(0);
-      }
-    }
+      }*/
+    //}
+  }
+  else {
+    player.anims.play("idle", true);
   }
 
   // OLD CODE FOR MOVING
@@ -418,8 +448,8 @@ function generateItems() {
   switch (id) {
     case 0:
       item = Scene.physics.add.staticImage(
-        getRandomInt(WIDTH),
-        getRandomInt(HEIGHT),
+        getRandomInt(WIDTH - 64),
+        getRandomInt(HEIGHT - 64),
         "boot"
       );
       break;
@@ -523,7 +553,7 @@ function fireballHit(fireball, enemy) {
 }
 
 function checkEnemiesDeath(i) {
-  let enemy;
+  let newEnemy;
   //check if each enemy is dead
   if (enemies[i].hp <= 0) {
     enemies[i].enemy.disableBody(true, true);
@@ -540,28 +570,28 @@ function checkEnemiesDeath(i) {
         console.log("adding another Enemy");
         //spawn top
         if (i % 4 == 0) {
-          enemy = addEnemy.call(Scene, getRandomInt(832), 64);
-          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+          newEnemy = addEnemy.call(Scene, getRandomInt(832), 64);
+          Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
         }
         //spawn bottom
         else if (i % 4 == 1) {
-          enemy = addEnemy.call(Scene, getRandomInt(832), 576);
-          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+          newEnemy = addEnemy.call(Scene, getRandomInt(832), 576);
+          Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
         }
         //spawn left
         else if (i % 4 == 2) {
-          enemy = addEnemy.call(Scene, 64, getRandomInt(576));
-          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+          newEnemy = addEnemy.call(Scene, 64, getRandomInt(576));
+          Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
         }
         //spawn right
         else {
-          enemy = addEnemy.call(Scene, 832, getRandomInt(576));
-          Scene.physics.add.overlap(player, enemy, hitPlayer, null, Scene);
+          newEnemy = addEnemy.call(Scene, 832, getRandomInt(576));
+          Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
         }
         if (enemies.length > 1) {
           for (let j = 0; j < enemies.length - 1; j++) {
             console.log("In collider loop");
-            Scene.physics.add.collider(enemies[j].enemy, enemy);
+            Scene.physics.add.collider(enemies[j].enemy, newEnemy);
           }
         }
         enemyCount++;
@@ -576,7 +606,9 @@ function checkEnemiesDeath(i) {
 function mineTrip(mine, player) {
   if (wActive <= 0) {
     mine.anims.play("explode", true);
-    mine.disableBody(true, true);
+    if (mine.visible == false) {
+      mine.disableBody(true, true);
+    }
     const DistanceBetween = Phaser.Math.Distance.Between;
 
     //minus 3 health for enemies around
