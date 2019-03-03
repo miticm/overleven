@@ -340,83 +340,31 @@ function playerMove() {
   var distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
 
   if (player.body.speed > 0) {
-    /*if (player.x == mouseX && player.y == mouseY) {
-      moving = false;
-    } else {*/
-
-      //distance tolerance
-      //var distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
-
-      if (distance < 4) {
-        player.setVelocity(0);
-      }
-      else if ((player.body.velocity.x == 0 || player.body.velocity.y == 0) && target.x != player.body.velocity.x && target.y != player.body.velocity.y) {
-        player.setVelocity(0);
-      }
-      
-      //animations
-      if (player.body.velocity.x > 0) {
-        player.anims.play("right", true);
-      }
-      else if (player.body.velocity.x < 0) {
-        player.anims.play("left", true);
-      }
-      if (player.body.velocity.y > 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
-        player.anims.play("down", true);
-      }
-      else if (player.body.velocity.y < 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
-        player.anims.play("up", true);
-      }
-
-      /*if (player.x > mouseX) {
-        game.physics.arcade.setVelocityX(-tempXSpeed);
-        player.anims.play("left", true);
-      } else if (player.x < mouseX) {
-        player.setVelocityX(tempXSpeed);
-        player.anims.play("right", true);
-      } else {
-        player.setVelocityX(0);
-      }
-
-      const tempYSpeed = playerSpeed;
-
-      if (player.y > mouseY) {
-        player.setVelocityY(-tempYSpeed);
-        player.anims.play("up", true);
-      } else if (player.y < mouseY) {
-        player.setVelocityY(tempYSpeed);
-        player.anims.play("down", true);
-      } else {
-        player.setVelocityY(0);
-      }*/
-    //}
+    //check for distance tolerance
+    if (distance < 4) {
+      player.setVelocity(0);
+    }
+    else if ((player.body.velocity.x == 0 || player.body.velocity.y == 0) && target.x != player.body.velocity.x && target.y != player.body.velocity.y) {
+      player.setVelocity(0);
+    }
+    
+    //animations
+    if (player.body.velocity.x > 0) {
+      player.anims.play("right", true);
+    }
+    else if (player.body.velocity.x < 0) {
+      player.anims.play("left", true);
+    }
+    if (player.body.velocity.y > 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
+      player.anims.play("down", true);
+    }
+    else if (player.body.velocity.y < 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
+      player.anims.play("up", true);
+    }
   }
   else {
     player.anims.play("idle", true);
   }
-
-  // OLD CODE FOR MOVING
-  // Left/right
-  // if (controls.left.isDown) {
-  //   player.setVelocityX(-playerSpeed);
-  //   player.anims.play("left", true);
-  // } else if (controls.right.isDown) {
-  //   player.setVelocityX(playerSpeed);
-  //   player.anims.play("right", true);
-  // } else {
-  //   player.setVelocityX(0);
-  // }
-
-  // // Down/up
-  // if (controls.up.isDown) {
-  //   player.setVelocityY(-playerSpeed);
-  //   player.anims.play("up", true);
-  // } else if (controls.down.isDown) {
-  //   player.setVelocityY(playerSpeed);
-  //   player.anims.play("down", true);
-  // } else {
-  //   player.setVelocityY(0);
-  // }
 }
 
 // Moves enemies
@@ -625,24 +573,6 @@ function mineTrip(mine, player) {
       }
 
       checkEnemiesDeath(i);
-    }
-  }
-}
-
-function hitEnemy(bullet, enemy) {
-  bullet.disableBody(true, true);
-  console.log(bullet);
-  const found = enemies.find(function(e) {
-    return e.enemy == enemy;
-  });
-  console.log(found);
-  found.hp -= 1;
-  if (found.hp <= 0) {
-    enemy.disableBody(true, true);
-    enemyCount -= 1;
-    if (enemyCount == 0) {
-      this.scene.remove("info");
-      this.scene.start("win");
     }
   }
 }
