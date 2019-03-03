@@ -23,6 +23,11 @@ export const game = new Phaser.Class({
     this.track;
     this.text;
   },
+  preload: function () {
+    this.load.image("pause_button", "assets/pause_button.png");
+    this.load.image("shop_button", "assets/shop_button.png");
+
+  },
   create: create,
   update: update
 });
@@ -47,9 +52,11 @@ let wCooldown = 0;
 let eCooldown = 0;
 let rCooldown = 0;
 let playerSpeed = 140;
+let maxPlayerSpeed = 400;
 let inv = 30;
 export let hp = 20;
 export let gold = 0;
+export let maxHealth = 20;
 
 // Enemy related variables
 let enemies = [];
@@ -69,6 +76,86 @@ function create() {
   const velocity = new Phaser.Math.Vector2();
   const line = new Phaser.Geom.Line();
   initVariables.call(this);
+
+  let shopScence = this.scene.get("shop");
+
+  //add pauseButton
+  let pauseButton = this.add
+      .sprite(
+        this.game.renderer.width - 50,
+        this.game.renderer.height - 50,
+        "pause_button"
+      )
+      .setDepth(1);
+    pauseButton.setScale(0.1, 0.1);
+    pauseButton.setInteractive();
+
+    pauseButton.on("pointerover", () => {
+      //make play button bloom
+      pauseButton.setScale(0.2, 0.2);
+    });
+    pauseButton.on("pointerout", () => {
+      //reset button bloom
+      pauseButton.setScale(0.1, 0.1);
+    });
+
+    pauseButton.on("pointerup", () => {
+      this.scene.launch('pause');
+      this.scene.pause('game');
+
+      // enemies = [];
+      // terrainMatrix = undefined;
+      //go to next scene
+    });
+
+    //add shop button
+    let shopButton = this.add
+      .sprite(
+        this.game.renderer.width - 100,
+        this.game.renderer.height - 50,
+        "shop_button"
+      )
+      .setDepth(1);
+    shopButton.setScale(0.1, 0.1);
+    shopButton.setInteractive();
+
+    shopButton.on("pointerover", () => {
+      //make play button bloom
+      shopButton.setScale(0.2, 0.2);
+    });
+    shopButton.on("pointerout", () => {
+      //reset button bloom
+      shopButton.setScale(0.1, 0.1);
+    });
+
+    shopButton.on("pointerup", () => {
+      this.scene.launch('shop');
+      this.scene.pause('game');
+
+      // enemies = [];
+      // terrainMatrix = undefined;
+      //go to next scene
+    });
+
+    //update variables in game
+    shopScence.events.on(
+      "goldByShield",
+      function() {
+        gold -= 200;
+        maxHealth += 10
+      },
+      this
+    );
+    shopScence.events.on(
+      "goldBySpeed",
+      function() {
+        gold -= 100;
+        maxPlayerSpeed += 100;
+      },
+      this
+    );
+
+
 
   // Add background
   this.add.image(WIDTH / 2, HEIGHT / 2, "grass");
@@ -426,13 +513,21 @@ function upgrageAttributes(id, item) {
 
 function speedUp(player, item) {
   item.disableBody(true, true);
-  playerSpeed += 100;
+  if(playerSpeed < maxPlayerSpeed){
+    playerSpeed += 50;
+  }
 }
 
 function increaseHealth(player, item) {
   item.disableBody(true, true);
-  hp += 5;
-  Scene.events.emit("increaseHP");
+  if(hp < maxHealth){
+    if(hp >= maxHealth - 5){
+      hp = maxHealth
+    } else {
+      hp += 5;
+    }
+    Scene.events.emit("increaseHP");
+  }
 }
 
 // Initializes the terrain matrix for AI pathing

@@ -43,8 +43,8 @@ export const lose = new Phaser.Class({
 
     menuButton.on("pointerup", () => {
       this.scene.start("menu");
-      // enemies = [];
-      // terrainMatrix = undefined;
+      this.scene.stop('game');
+      this.scene.remove('info');
       //go to next scene
     });
     let retryButton = this.add
