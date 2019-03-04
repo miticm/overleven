@@ -663,7 +663,7 @@ function mineTrip(mine, player) {
           enemies[i].enemy.y
         ) < 125
       ) {
-        enemies[i].hp -= 3;
+        enemies[i].hp -= 1;
       }
 
       checkEnemiesDeath(i);
