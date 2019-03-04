@@ -13,6 +13,12 @@ export class InfoScene extends Phaser.Scene {
       fill: "#fff000"
     });
 
+    let sound = this.add.text(800, 10, 'Mute', {
+      font: "22px Arial",
+      fill: "#fff000"
+    });
+    sound.setInteractive();
+
     //  Grab a reference to the Game Scene
     let game = this.scene.get("game");
     let shop = this.scene.get("shop");
@@ -63,5 +69,17 @@ export class InfoScene extends Phaser.Scene {
       },
       this
     );
+
+    sound.on(
+      "pointerup",
+      function() {
+        if (sound.text == 'Mute') {
+          sound.setText('Unmute');
+        }
+        else {
+          sound.setText('Mute');
+        }
+      }
+    )
   }
 }
