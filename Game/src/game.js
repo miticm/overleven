@@ -711,4 +711,5 @@ function addEnemy(x, y) {
 function stopPlayer(player, grounds) {
   player.x = this.game.renderer.width / 2;
   player.y = this.game.renderer.height / 2;
+  
 }
