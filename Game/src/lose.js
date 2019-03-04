@@ -1,9 +1,7 @@
 // Lose scene
-import 'phaser';
-import {
-  WIDTH,
-  HEIGHT
-} from './constants.js';
+import "phaser";
+import { WIDTH, HEIGHT } from "./constants.js";
+import { game } from "./game";
 
 export const lose = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -13,13 +11,13 @@ export const lose = new Phaser.Class({
     });
   },
 
-  preload: function () {
+  preload: function() {
     this.load.image("menu_button", "assets/menu_button.png");
     this.load.image("retry_button", "assets/retry_button.png");
   },
 
-  create: function () {
-    const text = this.add.text(WIDTH / 2, HEIGHT / 2, "You lose...", {
+  create: function() {
+    const text = this.add.text(WIDTH / 2.5, HEIGHT / 2.5, "You lose...", {
       fontSize: "32px"
     });
     let menuButton = this.add
@@ -42,9 +40,10 @@ export const lose = new Phaser.Class({
     });
 
     menuButton.on("pointerup", () => {
+      this.scene.remove("game");
+      console.log(this.scene);
+      this.scene.remove("info");
       this.scene.start("menu");
-      this.scene.stop('game');
-      this.scene.remove('info');
       //go to next scene
     });
     let retryButton = this.add
@@ -68,10 +67,11 @@ export const lose = new Phaser.Class({
 
     retryButton.on(
       "pointerup",
-      function (event) {
-        this.scene.start("game");
-        enemies = [];
-        terrainMatrix = undefined;
+      function() {
+        this.scene.remove("game");
+        setTimeout(() => {
+          this.scene.add("game", game, true);
+        }, 200);
       },
       this
     );

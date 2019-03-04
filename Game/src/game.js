@@ -23,10 +23,9 @@ export const game = new Phaser.Class({
     this.track;
     this.text;
   },
-  preload: function () {
+  preload: function() {
     this.load.image("pause_button", "assets/pause_button.png");
     this.load.image("shop_button", "assets/shop_button.png");
-
   },
   create: create,
   update: update
@@ -81,81 +80,79 @@ function create() {
 
   //add pauseButton
   let pauseButton = this.add
-      .sprite(
-        this.game.renderer.width - 50,
-        this.game.renderer.height - 50,
-        "pause_button"
-      )
-      .setDepth(1);
+    .sprite(
+      this.game.renderer.width - 50,
+      this.game.renderer.height - 50,
+      "pause_button"
+    )
+    .setDepth(1);
+  pauseButton.setScale(0.1, 0.1);
+  pauseButton.setInteractive();
+
+  pauseButton.on("pointerover", () => {
+    //make play button bloom
+    pauseButton.setScale(0.2, 0.2);
+  });
+  pauseButton.on("pointerout", () => {
+    //reset button bloom
     pauseButton.setScale(0.1, 0.1);
-    pauseButton.setInteractive();
+  });
 
-    pauseButton.on("pointerover", () => {
-      //make play button bloom
-      pauseButton.setScale(0.2, 0.2);
-    });
-    pauseButton.on("pointerout", () => {
-      //reset button bloom
-      pauseButton.setScale(0.1, 0.1);
-    });
+  pauseButton.on("pointerup", () => {
+    this.scene.launch("pause");
+    this.scene.pause("game");
 
-    pauseButton.on("pointerup", () => {
-      this.scene.launch('pause');
-      this.scene.pause('game');
+    // enemies = [];
+    // terrainMatrix = undefined;
+    //go to next scene
+  });
 
-      // enemies = [];
-      // terrainMatrix = undefined;
-      //go to next scene
-    });
+  //add shop button
+  let shopButton = this.add
+    .sprite(
+      this.game.renderer.width - 100,
+      this.game.renderer.height - 50,
+      "shop_button"
+    )
+    .setDepth(1);
+  shopButton.setScale(0.1, 0.1);
+  shopButton.setInteractive();
 
-    //add shop button
-    let shopButton = this.add
-      .sprite(
-        this.game.renderer.width - 100,
-        this.game.renderer.height - 50,
-        "shop_button"
-      )
-      .setDepth(1);
+  shopButton.on("pointerover", () => {
+    //make play button bloom
+    shopButton.setScale(0.2, 0.2);
+  });
+  shopButton.on("pointerout", () => {
+    //reset button bloom
     shopButton.setScale(0.1, 0.1);
-    shopButton.setInteractive();
+  });
 
-    shopButton.on("pointerover", () => {
-      //make play button bloom
-      shopButton.setScale(0.2, 0.2);
-    });
-    shopButton.on("pointerout", () => {
-      //reset button bloom
-      shopButton.setScale(0.1, 0.1);
-    });
+  shopButton.on("pointerup", () => {
+    this.scene.launch("shop");
+    this.scene.pause("game");
 
-    shopButton.on("pointerup", () => {
-      this.scene.launch('shop');
-      this.scene.pause('game');
+    // enemies = [];
+    // terrainMatrix = undefined;
+    //go to next scene
+  });
 
-      // enemies = [];
-      // terrainMatrix = undefined;
-      //go to next scene
-    });
-
-    //update variables in game
-    shopScence.events.on(
-      "goldByShield",
-      function() {
-        gold -= 200;
-        maxHealth += 10
-      },
-      this
-    );
-    shopScence.events.on(
-      "goldBySpeed",
-      function() {
-        gold -= 100;
-        maxPlayerSpeed += 100;
-      },
-      this
-    );
-
-
+  //update variables in game
+  shopScence.events.on(
+    "goldByShield",
+    function() {
+      gold -= 200;
+      maxHealth += 10;
+    },
+    this
+  );
+  shopScence.events.on(
+    "goldBySpeed",
+    function() {
+      gold -= 100;
+      maxPlayerSpeed += 100;
+    },
+    this
+  );
 
   // Add background
   this.add.image(WIDTH / 2, HEIGHT / 2, "grass");
@@ -424,32 +421,49 @@ function cooldowns() {
 // Moves the player
 function playerMove() {
   //distance tolerance
-  var distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
+  var distance = Phaser.Math.Distance.Between(
+    player.x,
+    player.y,
+    target.x,
+    target.y
+  );
 
-  if (Math.abs(player.body.velocity.x) > 5 || Math.abs(player.body.velocity.y) > 5) {
+  if (
+    Math.abs(player.body.velocity.x) > 5 ||
+    Math.abs(player.body.velocity.y) > 5
+  ) {
     //check for distance tolerance
     if (distance < 4) {
       player.setVelocity(0);
+    } else if (
+      (player.body.velocity.x == 0 || player.body.velocity.y == 0) &&
+      target.x != player.body.velocity.x &&
+      target.y != player.body.velocity.y
+    ) {
+      Scene.physics.moveToObject(player, target, playerSpeed);
     }
-    else if ((player.body.velocity.x == 0 || player.body.velocity.y == 0) && target.x != player.body.velocity.x && target.y != player.body.velocity.y) {
-        Scene.physics.moveToObject(player, target, playerSpeed);
-    }
-    
+
     //animations
-    if (player.body.velocity.y > 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
+    if (
+      player.body.velocity.y > 0 &&
+      Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)
+    ) {
       player.anims.play("down", true);
-    }
-    else if (player.body.velocity.y < 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
+    } else if (
+      player.body.velocity.y < 0 &&
+      Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)
+    ) {
       player.anims.play("up", true);
-    }
-    else if (player.body.velocity.x > 0) {
+    } else if (player.body.velocity.x > 0) {
       player.anims.play("right", true);
-    }
-    else if (player.body.velocity.x < 0) {
+    } else if (player.body.velocity.x < 0) {
+      player.anims.play("left", true);
+    } else if (player.body.velocity.x > 0) {
+      player.anims.play("right", true);
+    } else if (player.body.velocity.x < 0) {
       player.anims.play("left", true);
     }
-  }
-  else {
+  } else {
     player.setVelocity(0);
     player.anims.play("idle", true);
   }
@@ -514,16 +528,16 @@ function upgrageAttributes(id, item) {
 
 function speedUp(player, item) {
   item.disableBody(true, true);
-  if(playerSpeed < maxPlayerSpeed){
+  if (playerSpeed < maxPlayerSpeed) {
     playerSpeed += 50;
   }
 }
 
 function increaseHealth(player, item) {
   item.disableBody(true, true);
-  if(hp < maxHealth){
-    if(hp >= maxHealth - 5){
-      hp = maxHealth
+  if (hp < maxHealth) {
+    if (hp >= maxHealth - 5) {
+      hp = maxHealth;
     } else {
       hp += 5;
     }
@@ -678,6 +692,7 @@ function hitPlayer(player, enemy) {
     this.events.emit("reduceHP");
     if (hp <= 0) {
       this.scene.remove("info");
+      this.scene.stop("menu");
       this.scene.start("lose");
     }
     inv = 30;
@@ -689,8 +704,8 @@ function addEnemy(x, y) {
   // console.log(enemy);
   enemies.push({
     enemy: enemy,
-    hp: (waveCount * 2),
-    speed: (50 + (waveCount * 2))
+    hp: waveCount * 2,
+    speed: 50 + waveCount * 2
   });
   enemy.anims.play("enemy", true);
   console.log(enemies);
