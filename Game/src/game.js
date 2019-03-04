@@ -437,30 +437,31 @@ function playerMove() {
   //distance tolerance
   var distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
 
-  if (player.body.speed > 0) {
+  if (Math.abs(player.body.velocity.x) > 5 || Math.abs(player.body.velocity.y) > 5) {
     //check for distance tolerance
     if (distance < 4) {
       player.setVelocity(0);
     }
     else if ((player.body.velocity.x == 0 || player.body.velocity.y == 0) && target.x != player.body.velocity.x && target.y != player.body.velocity.y) {
-      player.setVelocity(0);
+        Scene.physics.moveToObject(player, target, playerSpeed);
     }
     
     //animations
-    if (player.body.velocity.x > 0) {
-      player.anims.play("right", true);
-    }
-    else if (player.body.velocity.x < 0) {
-      player.anims.play("left", true);
-    }
     if (player.body.velocity.y > 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
       player.anims.play("down", true);
     }
     else if (player.body.velocity.y < 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
       player.anims.play("up", true);
     }
+    else if (player.body.velocity.x > 0) {
+      player.anims.play("right", true);
+    }
+    else if (player.body.velocity.x < 0) {
+      player.anims.play("left", true);
+    }
   }
   else {
+    player.setVelocity(0);
     player.anims.play("idle", true);
   }
 }
@@ -708,5 +709,6 @@ function addEnemy(x, y) {
 }
 
 function stopPlayer(player, grounds) {
-  moving = false;
+  player.x = this.game.renderer.width / 2;
+  player.y = this.game.renderer.height / 2;
 }
