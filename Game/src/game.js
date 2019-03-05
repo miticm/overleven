@@ -228,6 +228,18 @@ function create() {
     repeat: -1
   });
 
+  // Enemy Freeze frame
+  this.anims.create({
+    key: "freeze",
+    frames: [
+      {
+        key: "ice",
+        frame: 0
+      }
+    ],
+    frameRate: 0
+  });
+
   // Player Ability Animation
   this.anims.create({
     key: "fireball",
@@ -473,10 +485,12 @@ function playerMove() {
 function moveEnemies() {
   if (eActive <= 0) {
     enemies.forEach(function(enemy) {
+      //enemy.anims.play("enemy", true);
       enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
     });
   } else {
     enemies.forEach(function(enemy) {
+      //enemy.anims.play("freeze", true);
       enemyMovement(enemy.enemy, player, terrainMatrix, 0);
     });
   }

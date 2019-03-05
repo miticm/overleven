@@ -20,6 +20,10 @@ function preload() {
   this.load.image("grass", "assets/grass.png");
   this.load.image("ground", "assets/sml_rock64.png");
   this.load.image("bullet", "assets/bullet.png");
+  this.load.spritesheet("ice", "assets/ice.png", {
+    frameWidth: 64,
+    frameHeight: 64
+  })
   this.load.spritesheet("enemy", "assets/slime64.png", {
     frameWidth: 64,
     frameHeight: 64
