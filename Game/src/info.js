@@ -22,7 +22,6 @@ export class InfoScene extends Phaser.Scene {
     //  Grab a reference to the Game Scene
     let game = this.scene.get("game");
     let shop = this.scene.get("shop");
-    let dmgPrice = 50;
 
     // //  Listen for events from it
     game.events.on(
@@ -46,7 +45,7 @@ export class InfoScene extends Phaser.Scene {
     game.events.on(
       "increaseGold",
       function() {
-        this.gold += 25;
+        this.gold += 200;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
       },
       this
@@ -66,17 +65,6 @@ export class InfoScene extends Phaser.Scene {
       "goldBySpeed",
       function() {
         this.gold -= 100;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
-      },
-      this
-    );
-
-    shop.events.on(
-      "goldByDmg",
-      function() {
-        this.gold -= dmgPrice;
-        console.log(this.gold);
-        dmgPrice *= 3;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
       },
       this

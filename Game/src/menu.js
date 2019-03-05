@@ -1,5 +1,4 @@
-import "phaser";
-import { game } from "./game";
+import 'phaser';
 
 export const menu = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -11,14 +10,14 @@ export const menu = new Phaser.Class({
     window.GAME = this;
   },
 
-  preload: function() {
+  preload: function () {
     this.load.image("menu_background", "assets/background.jpg");
     this.load.image("play_button", "assets/start.png");
     this.load.image("leaderboard_button", "assets/leaderboard.png");
     this.load.image("game_title", "assets/overleven.png");
   },
 
-  create: function() {
+  create: function () {
     let background = this.add.sprite(0, 0, "menu_background");
     background.setScale(1.7, 1.7);
     background.setOrigin(0, 0);
@@ -51,7 +50,7 @@ export const menu = new Phaser.Class({
     });
 
     playButton.on("pointerup", () => {
-      this.scene.add("game", game, true);
+      this.scene.start("game");
       //go to next scene
     });
 

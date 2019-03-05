@@ -1,9 +1,13 @@
-import "phaser";
+import 'phaser';
 
-import { HEIGHT, WIDTH, LEADERBOARD_NUM } from "./constants.js";
+import {
+  HEIGHT,
+  WIDTH,
+  LEADERBOARD_NUM
+} from "./constants.js";
 
-let names = {};
-let texts = [];
+let names = { };
+let texts = [ ];
 
 export const leaderboard = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -15,14 +19,14 @@ export const leaderboard = new Phaser.Class({
     window.GAME = this;
   },
 
-  preload: function() {
+  preload: function () {
     this.load.image("menu_background", "assets/background.jpg");
     this.load.image("play_button", "assets/start.png");
     this.load.image("leaderboard_button", "assets/leaderboard.png");
     this.load.image("game_title", "assets/overleven.png");
   },
 
-  create: function() {
+  create: function () {
     let background = this.add.sprite(0, 0, "menu_background");
     background.setScale(1.7, 1.7);
     background.setOrigin(0, 0);
@@ -47,7 +51,6 @@ export const leaderboard = new Phaser.Class({
     });
 
     playButton.on("pointerup", () => {
-      this.scene.stop("leaderboard");
       this.scene.start("menu");
       //go to next scene
     });
@@ -60,35 +63,33 @@ export const leaderboard = new Phaser.Class({
         fill: "#ffffff"
       });
     }
-  }
+  },
 });
 
 function fetchLeaderboard() {
   const database = firebase.database();
+  
+  const thing = firebase.database().ref('/leaderboard').once('value').then(function(snapshot) {
+    names = (snapshot.val());
 
-  const thing = firebase
-    .database()
-    .ref("/leaderboard")
-    .once("value")
-    .then(function(snapshot) {
-      names = snapshot.val();
+    // Sort the names by score
+    const keys = Object.keys(names);
 
-      // Sort the names by score
-      const keys = Object.keys(names);
+    keys.sort(compareScores);
 
-      keys.sort(compareScores);
-
-      for (let i = 0; i < keys.length; i++) {
-        if (i >= LEADERBOARD_NUM) {
-          break;
-        }
-        texts[i].setText(`${keys[i]}: ${names[keys[i]]}`);
+    for (let i = 0; i < keys.length; i++) {
+      if (i >= LEADERBOARD_NUM) {
+        break;
       }
-    });
+      texts[i].setText(`${keys[i]}: ${names[keys[i]]}`);
+    }
+  });
 }
 
-function compareScores(a, b) {
-  if (names[a] < names[b]) return 1;
-  if (names[a] > names[b]) return -1;
+function compareScores(a,b) {
+  if (names[a] < names[b])
+    return 1;
+  if (names[a] > names[b])
+    return -1;
   return 0;
 }
