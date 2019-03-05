@@ -57,6 +57,8 @@ let inv = 30;
 export let hp = 20;
 export let gold = 0;
 export let maxHealth = 20;
+let qDmg = 1;
+let dmgPrice = 50;
 
 // Enemy related variables
 let enemies = [];
@@ -92,7 +94,7 @@ function create() {
 
     pauseButton.on("pointerover", () => {
       //make play button bloom
-      pauseButton.setScale(0.2, 0.2);
+      pauseButton.setScale(0.12, 0.12);
     });
     pauseButton.on("pointerout", () => {
       //reset button bloom
@@ -111,7 +113,7 @@ function create() {
     //add shop button
     let shopButton = this.add
       .sprite(
-        this.game.renderer.width - 100,
+        this.game.renderer.width - 105,
         this.game.renderer.height - 50,
         "shop_button"
       )
@@ -121,7 +123,7 @@ function create() {
 
     shopButton.on("pointerover", () => {
       //make play button bloom
-      shopButton.setScale(0.2, 0.2);
+      shopButton.setScale(0.12, 0.12);
     });
     shopButton.on("pointerout", () => {
       //reset button bloom
@@ -151,6 +153,15 @@ function create() {
       function() {
         gold -= 100;
         maxPlayerSpeed += 100;
+      },
+      this
+    );
+    shopScence.events.on(
+      "goldByDmg",
+      function() {
+        gold -= dmgPrice;
+        dmgPrice *= 3;
+        qDmg++;
       },
       this
     );
@@ -426,30 +437,31 @@ function playerMove() {
   //distance tolerance
   var distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
 
-  if (player.body.speed > 0) {
+  if (Math.abs(player.body.velocity.x) > 5 || Math.abs(player.body.velocity.y) > 5) {
     //check for distance tolerance
     if (distance < 4) {
       player.setVelocity(0);
     }
     else if ((player.body.velocity.x == 0 || player.body.velocity.y == 0) && target.x != player.body.velocity.x && target.y != player.body.velocity.y) {
-      player.setVelocity(0);
+        Scene.physics.moveToObject(player, target, playerSpeed);
     }
     
     //animations
-    if (player.body.velocity.x > 0) {
-      player.anims.play("right", true);
-    }
-    else if (player.body.velocity.x < 0) {
-      player.anims.play("left", true);
-    }
     if (player.body.velocity.y > 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
       player.anims.play("down", true);
     }
     else if (player.body.velocity.y < 0 && Math.abs(player.body.velocity.y) > Math.abs(player.body.velocity.x)) {
       player.anims.play("up", true);
     }
+    else if (player.body.velocity.x > 0) {
+      player.anims.play("right", true);
+    }
+    else if (player.body.velocity.x < 0) {
+      player.anims.play("left", true);
+    }
   }
   else {
+    player.setVelocity(0);
     player.anims.play("idle", true);
   }
 }
@@ -589,7 +601,7 @@ function fireballHit(fireball, enemy) {
         enemies[i].enemy.y
       ) < 75
     ) {
-      enemies[i].hp -= 1;
+      enemies[i].hp -= qDmg;
     }
     checkEnemiesDeath(i);
   }
@@ -601,7 +613,7 @@ function checkEnemiesDeath(i) {
   if (enemies[i].hp <= 0) {
     enemies[i].enemy.disableBody(true, true);
     enemies.splice(i, 1);
-    gold += 200;
+    gold += 25;
     Scene.events.emit("increaseGold");
     enemyCount -= 1;
     console.log(enemies.length);
@@ -697,5 +709,7 @@ function addEnemy(x, y) {
 }
 
 function stopPlayer(player, grounds) {
-  moving = false;
+  player.x = this.game.renderer.width / 2;
+  player.y = this.game.renderer.height / 2;
+  
 }
