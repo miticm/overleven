@@ -224,18 +224,6 @@ function create() {
     repeat: -1
   });
 
-  // Enemy Freeze frame
-  this.anims.create({
-    key: "freeze",
-    frames: [
-      {
-        key: "ice",
-        frame: 0
-      }
-    ],
-    frameRate: 0
-  });
-
   // Player Ability Animation
   this.anims.create({
     key: "fireball",
