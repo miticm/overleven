@@ -29,7 +29,7 @@ function preload() {
   //this.load.image("Q", "assets/qability.png");
   this.load.image("potion", "assets/potion.png");
   this.load.image("tree", "assets/tree.png");
-  this.load.spritesheet("player", "assets/wizard64.png", {
+  this.load.spritesheet("player", "assets/knight.png", {
     frameWidth: 64,
     frameHeight: 64
   });
