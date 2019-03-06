@@ -68,12 +68,30 @@ var target = new Phaser.Math.Vector2();
 
 // Sounds
 let deathSound;
+let bombSound;
+let bombOne = true;
+let damageSound;
+export let fireSound;
+let newLevelSound;
+let rockSound;
+let shopSound;
+let healthSound;
+let speedSound;
+let portSound;
 
 // Function is ran at start of game, initialize all sprites and math
 function create() {
 
   // Sounds
   deathSound = this.sound.add('die');
+  bombSound = this.sound.add('bomb');
+  damageSound = this.sound.add('damage');
+  fireSound = this.sound.add('fire');
+  newLevelSound = this.sound.add('newLevel');
+  rockSound = this.sound.add('rock');
+  speedSound = this.sound.add('speed');
+  healthSound = this.sound.add('health');
+  portSound = this.sound.add('port');
 
   // Calculations for shooting angle
   const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
@@ -315,6 +333,7 @@ function create() {
           player.y,
           "fireball"
         );
+        Scene.events.emit("fireSound");
         fireball
           .enableBody(true, player.x, player.y, true, true)
           .setVelocity(velocity.x, velocity.y);
@@ -389,6 +408,7 @@ function create() {
 
           //make the player stay still
           moving = false;
+          portSound.play();
           player.setVelocity(0);
         }
       } else {
@@ -493,6 +513,7 @@ function moveEnemies() {
 function breakGround(bullet, ground) {
   bullet.disableBody(true, true);
   ground.disableBody(true, true);
+  rockSound.play();
   const coord = currentBlock(ground.x, ground.y);
   terrainMatrix[coord.x][coord.y] = false;
   let iteminfo = generateItems();
@@ -538,6 +559,7 @@ function speedUp(player, item) {
   if (playerSpeed < maxPlayerSpeed) {
     playerSpeed += 50;
   }
+  speedSound.play();
 }
 
 function increaseHealth(player, item) {
@@ -550,6 +572,7 @@ function increaseHealth(player, item) {
     }
     Scene.events.emit("increaseHP");
   }
+  healthSound.play();
 }
 
 // Initializes the terrain matrix for AI pathing
@@ -631,6 +654,8 @@ function checkEnemiesDeath(i) {
     if (enemyCount == 0) {
       waveCount++;
 
+      newLevelSound.play();
+
       //add enemies for next wave
       for (let i = 0; i < waveCount + 1; i++) {
         console.log("adding another Enemy");
@@ -670,10 +695,16 @@ function checkEnemiesDeath(i) {
 }
 
 function mineTrip(mine, player) {
+  let thing = true;
   if (wActive <= 0) {
     mine.anims.play("explode", true);
+    if (bombOne) {
+      bombSound.play();
+      bombOne = false;
+    }
     if (mine.visible == false) {
       mine.disableBody(true, true);
+      bombOne = true;
     }
     const DistanceBetween = Phaser.Math.Distance.Between;
 
@@ -698,6 +729,7 @@ function mineTrip(mine, player) {
 function hitPlayer(player, enemy) {
   if (inv <= 0) {
     hp -= 1;
+    damageSound.play();
     this.events.emit("reduceHP");
     if (hp <= 0) {
       this.scene.remove("info");
