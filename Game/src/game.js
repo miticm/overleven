@@ -56,18 +56,25 @@ let inv = 30;
 export let hp = 20;
 export let gold = 0;
 export let maxHealth = 20;
+export let enemyCount = 2;
 
 // Enemy related variables
 let enemies = [];
 let terrainMatrix;
-let enemyCount = 2;
 let waveCount = 1;
 
-//movement variable
+// Movement variable
 var target = new Phaser.Math.Vector2();
+
+// Sounds
+let deathSound;
 
 // Function is ran at start of game, initialize all sprites and math
 function create() {
+
+  // Sounds
+  deathSound = this.sound.add('die');
+
   // Calculations for shooting angle
   const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
   const SetToAngle = Phaser.Geom.Line.SetToAngle;
@@ -614,6 +621,7 @@ function checkEnemiesDeath(i) {
   let newEnemy;
   //check if each enemy is dead
   if (enemies[i].hp <= 0) {
+    deathSound.play();
     enemies[i].enemy.disableBody(true, true);
     enemies.splice(i, 1);
     gold += 200;
@@ -657,6 +665,7 @@ function checkEnemiesDeath(i) {
       //Scene.scene.remove("info");
       //Scene.scene.start("win");
     }
+    Scene.events.emit("checkEnemiesDeath");
   }
 }
 

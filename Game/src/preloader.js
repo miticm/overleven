@@ -41,4 +41,6 @@ function preload() {
     frameWidth: 64,
     frameHeight: 64
   });
+
+  this.load.audio('die', 'assets/sounds/die.wav');
 }

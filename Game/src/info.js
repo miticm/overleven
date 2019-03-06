@@ -1,14 +1,15 @@
-import { hp, gold, maxHealth} from "./game";
+import { hp, gold, maxHealth, enemyCount} from "./game";
 export class InfoScene extends Phaser.Scene {
   constructor() {
     super({ key: "info", active: false });
     this.hp = hp;
     this.gold = gold;
     this.maxHealth = maxHealth;
+    this.enemiesRemaining = enemyCount;
   }
 
   create() {
-    let info = this.add.text(10, 10, `HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`, {
+    let info = this.add.text(10, 10, `HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`, {
       font: "22px Arial",
       fill: "#fff000"
     });
@@ -28,7 +29,7 @@ export class InfoScene extends Phaser.Scene {
       "reduceHP",
       function() {
         this.hp -= 1;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
@@ -37,16 +38,26 @@ export class InfoScene extends Phaser.Scene {
       "increaseHP",
       function() {
         this.hp += 5;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
 
     game.events.on(
+      "checkEnemiesDeath",
+      function() {
+        this.enemiesRemaining = enemyCount;
+        console.log('hello')
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
+      },
+      this
+    )
+
+    game.events.on(
       "increaseGold",
       function() {
         this.gold += 200;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
@@ -56,7 +67,7 @@ export class InfoScene extends Phaser.Scene {
       function() {
         this.gold -= 200;
         this.maxHealth += 10
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
@@ -65,7 +76,7 @@ export class InfoScene extends Phaser.Scene {
       "goldBySpeed",
       function() {
         this.gold -= 100;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
