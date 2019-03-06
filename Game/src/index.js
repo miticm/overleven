@@ -17,7 +17,7 @@ var config = {
   parent: "phaser-example",
   width: WIDTH,
   height: HEIGHT,
-  scene: [preloader, menu, leaderboard, win, pause, lose, shop],
+  scene: [preloader, menu, game, leaderboard, win, pause, lose, shop],
   physics: {
     default: "arcade"
   }

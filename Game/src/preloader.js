@@ -1,5 +1,5 @@
 // Preloader scene
-import 'phaser';
+import "phaser";
 
 export const preloader = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -10,7 +10,7 @@ export const preloader = new Phaser.Class({
   },
   preload: preload,
 
-  create: function () {
+  create: function() {
     this.scene.start("menu");
   }
 });
