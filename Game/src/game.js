@@ -58,6 +58,7 @@ export let gold = 0;
 export let maxHealth = 20;
 let qDmg = 1;
 let dmgPrice = 50;
+let potPrice = 50;
 
 // Enemy related variables
 let enemies = [];
@@ -93,7 +94,7 @@ function create() {
 
   pauseButton.on("pointerover", () => {
     //make play button bloom
-    pauseButton.setScale(0.2, 0.2);
+    pauseButton.setScale(0.12, 0.12);
   });
   pauseButton.on("pointerout", () => {
     //reset button bloom
@@ -157,6 +158,15 @@ function create() {
       gold -= dmgPrice;
       dmgPrice *= 3;
       qDmg++;
+    },
+    this
+  );
+  shopScence.events.on(
+    "goldByPot",
+    function() {
+      gold -= potPrice;
+      potPrice += 50;
+      hp = maxHealth;
     },
     this
   );

@@ -9,6 +9,8 @@ let shieldBought = false;
 let speedBought = false;
 let dmgBought = 0;
 let goldForDamage = 50;
+let goldForPot = 50;
+let potBought = 0;
 
 
 export const shop = new Phaser.Class({
@@ -25,6 +27,8 @@ export const shop = new Phaser.Class({
     this.load.image("shield", "assets/shield.png");
     this.load.image("speed", "assets/speed.png");
     this.load.image("dmg", "assets/dmg.png");
+    this.load.image("aid", "assets/firstaid.png");
+
   },
 
   create: function () {
@@ -148,7 +152,6 @@ export const shop = new Phaser.Class({
         "pointerup",
         function (event) {
             if(gold >= goldForDamage){
-                console.log(gold);
                 if(dmgBought != 3){
                     this.events.emit("goldByDmg");
                     dmgBought++;
@@ -165,9 +168,54 @@ export const shop = new Phaser.Class({
         this
     );
 
-    const text4 = this.add.text(WIDTH / 3, (HEIGHT / 5) + 180, "Buy", {
+    const text4 = this.add.text(WIDTH / 3, (HEIGHT / 5) + 180, `Refill Health ($${goldForPot})`, {
         fontSize: "32px"
-      });
+    });
+
+      if(potBought == 3){
+        text4.setText("SOLD");
+    }
+
+    //speed image
+    let pot = this.add
+      .sprite(
+        (WIDTH / 3) - 50, (HEIGHT / 5) + 180,
+        "aid"
+      )
+      .setDepth(1);
+    pot.setScale(1, 1);
+    pot.setInteractive();
+
+    pot.on("pointerover", () => {
+      //make play button bloom
+        pot.setScale(1.18, 1.18);
+    });
+    pot.on("pointerout", () => {
+      //reset button bloom
+        pot.setScale(1, 1);
+    });
+
+    pot.on(
+        "pointerup",
+        function (event) {
+            if(gold >= goldForPot){
+                if(potBought != 3){
+                  if(hp != maxHealth){
+                    this.events.emit("goldByPot");
+                    potBought++;
+                    goldForPot += 50;
+                    if(potBought != 3){
+                        text4.setText(`Refill Health ($${goldForPot})`);
+                    } else {
+                        text4.setText("SOLD");
+                    }
+                  }
+                }
+                
+            }
+        },
+        this
+    );
 
     let playButton = this.add
       .sprite(
