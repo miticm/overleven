@@ -103,10 +103,6 @@ function create() {
   pauseButton.on("pointerup", () => {
     this.scene.launch("pause");
     this.scene.pause("game");
-
-    // enemies = [];
-    // terrainMatrix = undefined;
-    //go to next scene
   });
 
   //add shop button
@@ -630,7 +626,6 @@ function checkEnemiesDeath(i) {
     gold += 25;
     Scene.events.emit("increaseGold");
     enemyCount -= 1;
-    console.log(enemies.length);
     if (enemyCount == 0) {
       waveCount++;
 
@@ -703,7 +698,7 @@ function hitPlayer(player, enemy) {
     this.events.emit("reduceHP");
     if (hp <= 0) {
       this.scene.remove("info");
-      this.scene.stop("menu");
+      this.scene.stop("game");
       this.scene.start("lose");
     }
     inv = 30;
@@ -712,14 +707,12 @@ function hitPlayer(player, enemy) {
 
 function addEnemy(x, y) {
   const enemy = this.physics.add.sprite(x, y, "enemy");
-  // console.log(enemy);
   enemies.push({
     enemy: enemy,
     hp: waveCount * 2,
     speed: 50 + waveCount * 2
   });
   enemy.anims.play("enemy", true);
-  console.log(enemies);
   return enemy;
 }
 
