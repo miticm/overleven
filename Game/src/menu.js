@@ -52,7 +52,7 @@ export const menu = new Phaser.Class({
 
     playButton.on("pointerup", () => {
       this.scene.stop("menu");
-      this.scene.start("game");
+      this.scene.start("char_select");
       //go to next scene
     });
 

@@ -8,6 +8,9 @@ import {
   getRandomInt
 } from "./generic-functions.js";
 import {
+  characterSelected
+} from "./char_select.js";
+import {
   HEIGHT,
   WIDTH,
   BLOCK_SIZE,
@@ -89,6 +92,7 @@ export let healthSound;
 export let speedSound;
 export let portSound;
 
+
 // Function is ran at start of game, initialize all sprites and math
 function create() {
 
@@ -112,9 +116,6 @@ function create() {
   initVariables.call(this);
 
   let shopScence = this.scene.get("shop");
-
-  console.log("hello");
-  //
 
   //add pauseButton
   let pauseButton = this.add
@@ -164,7 +165,7 @@ function create() {
   shopButton.on("pointerup", () => {
     this.scene.launch('shop');
     this.scene.pause('game');
-    
+
     // enemies = [];
     // terrainMatrix = undefined;
     //go to next scene
@@ -213,7 +214,7 @@ function create() {
   player = this.physics.add.sprite(
     this.game.renderer.width / 2,
     this.game.renderer.height / 2,
-    "player"
+    characterSelected
   );
 
   player.setCollideWorldBounds(true);
@@ -222,7 +223,7 @@ function create() {
   this.anims.create({
     key: "idle",
     frames: [{
-      key: "player",
+      key: characterSelected,
       frame: 0
     }],
     frameRate: 0
@@ -230,7 +231,7 @@ function create() {
 
   this.anims.create({
     key: "down",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 1,
       end: 2
     }),
@@ -240,7 +241,7 @@ function create() {
 
   this.anims.create({
     key: "up",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 7,
       end: 8
     }),
@@ -250,7 +251,7 @@ function create() {
 
   this.anims.create({
     key: "left",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 3,
       end: 4
     }),
@@ -260,7 +261,7 @@ function create() {
 
   this.anims.create({
     key: "right",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 5,
       end: 6
     }),
@@ -519,21 +520,11 @@ function playerMove() {
 // Moves enemies
 function moveEnemies() {
   if (eActive <= 0) {
-<<<<<<< HEAD
-    enemies.forEach(function(enemy) {
-      //enemy.anims.play("enemy", true);
-      enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
-    });
-  } else {
-    enemies.forEach(function(enemy) {
-      //enemy.anims.play("freeze", true);
-=======
     enemies.forEach(function (enemy) {
       enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
     });
   } else {
     enemies.forEach(function (enemy) {
->>>>>>> f6c11efbf9eb56347ee59745d7d669ef95e711f5
       enemyMovement(enemy.enemy, player, terrainMatrix, 0);
     });
   }
