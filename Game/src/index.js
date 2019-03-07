@@ -10,6 +10,7 @@ import { game } from "./game.js";
 import { pause } from "./pause.js";
 import { shop } from "./shop.js";
 import { leaderboard } from "./leaderboard.js";
+import { char_select } from "./char_select.js";
 
 // Config and set up the game, in general don't mess with
 var config = {
@@ -17,7 +18,7 @@ var config = {
   parent: "phaser-example",
   width: WIDTH,
   height: HEIGHT,
-  scene: [preloader, menu, game, leaderboard, win, pause, lose, shop],
+  scene: [preloader, menu, game, leaderboard, win, pause, lose, shop, char_select],
   physics: {
     default: "arcade"
   }

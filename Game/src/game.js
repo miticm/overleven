@@ -78,6 +78,9 @@ function create() {
 
   let shopScence = this.scene.get("shop");
 
+  console.log("hello");
+  //
+
   //add pauseButton
   let pauseButton = this.add
     .sprite(
@@ -159,6 +162,7 @@ function create() {
     this.game.renderer.height / 2,
     "player"
   );
+
   player.setCollideWorldBounds(true);
 
   // player animations
@@ -224,7 +228,7 @@ function create() {
     repeat: -1
   });
 
-  // Player Ability Animation
+  // Player Fireball Animation
   this.anims.create({
     key: "fireball",
     frames: this.anims.generateFrameNumbers("fireball", {
@@ -235,7 +239,7 @@ function create() {
     repeat: -1
   });
 
-  //Mine explosion animation
+  // Mine explosion animation
   this.anims.create({
     key: "explode",
     frames: this.anims.generateFrameNumbers("mine", {
