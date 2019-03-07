@@ -44,6 +44,8 @@ export class InfoScene extends Phaser.Scene {
     //  Grab a reference to the Game Scene
     let game = this.scene.get("game");
     let shop = this.scene.get("shop");
+    let dmgPrice = 50;
+    let potPrice = 50;
 
     // //  Listen for events from it
     game.events.on(
@@ -58,7 +60,7 @@ export class InfoScene extends Phaser.Scene {
     game.events.on(
       "increaseHP",
       function () {
-        this.hp += 5;
+        this.hp = hp;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
@@ -76,7 +78,7 @@ export class InfoScene extends Phaser.Scene {
     game.events.on(
       "increaseGold",
       function () {
-        this.gold += 200;
+        this.gold += 25;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
@@ -187,6 +189,27 @@ export class InfoScene extends Phaser.Scene {
       function () {
         this.gold -= 100;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
+      },
+      this
+    );
+
+    shop.events.on(
+      "goldByDmg",
+      function() {
+        this.gold -= dmgPrice;
+        dmgPrice *= 3;
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+      },
+      this
+    );
+
+    shop.events.on(
+      "goldByPot",
+      function() {
+        this.gold -= potPrice;
+        potPrice += 50;
+        this.hp = this.maxHealth;
+        info.setText(`HP: ${this.maxHealth}\/${this.maxHealth}\nGold: ${this.gold}`);
       },
       this
     );

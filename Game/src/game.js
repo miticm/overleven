@@ -64,6 +64,9 @@ export let hp = 20;
 export let gold = 0;
 export let maxHealth = 20;
 export let enemyCount = 2;
+let qDmg = 1;
+let dmgPrice = 50;
+let potPrice = 50;
 
 // Enemy related variables
 let enemies = [];
@@ -123,7 +126,7 @@ function create() {
 
   pauseButton.on("pointerover", () => {
     //make play button bloom
-    pauseButton.setScale(0.2, 0.2);
+    pauseButton.setScale(0.12, 0.12);
   });
   pauseButton.on("pointerout", () => {
     //reset button bloom
@@ -138,7 +141,7 @@ function create() {
   //add shop button
   let shopButton = this.add
     .sprite(
-      this.game.renderer.width - 100,
+      this.game.renderer.width - 105,
       this.game.renderer.height - 50,
       "shop_button"
     )
@@ -148,7 +151,7 @@ function create() {
 
   shopButton.on("pointerover", () => {
     //make play button bloom
-    shopButton.setScale(0.2, 0.2);
+    shopButton.setScale(0.12, 0.12);
   });
   shopButton.on("pointerout", () => {
     //reset button bloom
@@ -156,9 +159,9 @@ function create() {
   });
 
   shopButton.on("pointerup", () => {
-    this.scene.launch("shop");
-    this.scene.pause("game");
-
+    this.scene.launch('shop');
+    this.scene.pause('game');
+    
     // enemies = [];
     // terrainMatrix = undefined;
     //go to next scene
@@ -169,7 +172,7 @@ function create() {
     "goldByShield",
     function () {
       gold -= 200;
-      maxHealth += 10;
+      maxHealth += 10
     },
     this
   );
@@ -178,6 +181,24 @@ function create() {
     function () {
       gold -= 100;
       maxPlayerSpeed += 100;
+    },
+    this
+  );
+  shopScence.events.on(
+    "goldByDmg",
+    function() {
+      gold -= dmgPrice;
+      dmgPrice *= 3;
+      qDmg = waveCount;
+    },
+    this
+  );
+  shopScence.events.on(
+    "goldByPot",
+    function() {
+      gold -= potPrice;
+      potPrice += 50;
+      hp = maxHealth;
     },
     this
   );
@@ -297,9 +318,9 @@ function create() {
   const enemy = addEnemy.call(this, 64, 64);
   this.physics.add.overlap(player, enemy, hitPlayer, null, this);
 
-  // const enemy2 = addEnemy.call(this, 256, 64);
-  // this.physics.add.collider(enemy2, enemy);
-  // this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
+  const enemy2 = addEnemy.call(this, 256, 64);
+  this.physics.add.collider(enemy2, enemy);
+  this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
@@ -561,7 +582,10 @@ function increaseHealth(player, item) {
   item.disableBody(true, true);
   if (hp < maxHealth) {
     if (hp >= maxHealth - 5) {
+      console.log(hp);
+      console.log(maxHealth);
       hp = maxHealth;
+      console.log(hp);
     } else {
       hp += 5;
     }
@@ -634,7 +658,7 @@ function fireballHit(fireball, enemy) {
         enemies[i].enemy.y
       ) < 75
     ) {
-      enemies[i].hp -= 1;
+      enemies[i].hp -= qDmg;
     }
     checkEnemiesDeath(i);
   }
@@ -647,7 +671,7 @@ function checkEnemiesDeath(i) {
     Scene.events.emit("deathSound");
     enemies[i].enemy.disableBody(true, true);
     enemies.splice(i, 1);
-    gold += 200;
+    gold += 25;
     Scene.events.emit("increaseGold");
     enemyCount -= 1;
     if (enemyCount == 0) {
