@@ -1,9 +1,6 @@
 // Pause scene
-import 'phaser';
-import {
-  WIDTH,
-  HEIGHT
-} from './constants.js';
+import "phaser";
+import { WIDTH, HEIGHT } from "./constants.js";
 
 export const pause = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -13,12 +10,12 @@ export const pause = new Phaser.Class({
     });
   },
 
-  preload: function () {
+  preload: function() {
     this.load.image("menu_button", "assets/menu_button.png");
     this.load.image("resume_button", "assets/resume_button.png");
   },
 
-  create: function () {
+  create: function() {
     const text = this.add.text(WIDTH / 2, HEIGHT / 2, "PAUSED", {
       fontSize: "32px"
     });
@@ -42,12 +39,10 @@ export const pause = new Phaser.Class({
     });
 
     menuButton.on("pointerup", () => {
+      this.scene.stop("game");
+      this.scene.remove("info");
+      this.scene.stop("pause");
       this.scene.start("menu");
-      this.scene.stop('game');
-      this.scene.remove('info');
-      //enemies = [];
-      //terrainMatrix = undefined;
-      //go to next scene
     });
     let playButton = this.add
       .sprite(
@@ -70,9 +65,9 @@ export const pause = new Phaser.Class({
 
     playButton.on(
       "pointerup",
-      function (event) {
-        this.scene.resume('game');
-        this.scene.stop();
+      function(event) {
+        this.scene.stop("pause");
+        this.scene.resume("game");
       },
       this
     );

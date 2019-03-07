@@ -39,13 +39,12 @@ export const lose = new Phaser.Class({
       menuButton.setScale(0.2, 0.2);
     });
 
+    //******************************** */
     menuButton.on("pointerup", () => {
-      this.scene.remove("game");
-      console.log(this.scene);
-      this.scene.remove("info");
       this.scene.start("menu");
-      //go to next scene
     });
+    //******************************** */
+
     let retryButton = this.add
       .sprite(
         this.game.renderer.width - 725,
@@ -65,15 +64,14 @@ export const lose = new Phaser.Class({
       retryButton.setScale(0.15, 0.15);
     });
 
+    //******************************** */
     retryButton.on(
       "pointerup",
       function() {
-        this.scene.remove("game");
-        setTimeout(() => {
-          this.scene.add("game", game, true);
-        }, 200);
+        this.scene.start("game");
       },
       this
     );
+    //******************************** */
   }
 });
