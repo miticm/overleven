@@ -41,4 +41,14 @@ function preload() {
     frameWidth: 64,
     frameHeight: 64
   });
+
+  this.load.audio('die', 'assets/sounds/die.wav');
+  this.load.audio('bomb', 'assets/sounds/bomb.wav');
+  this.load.audio('damage', 'assets/sounds/damage.wav');
+  this.load.audio('fire', 'assets/sounds/fire.wav');
+  this.load.audio('newLevel', 'assets/sounds/new_level.wav');
+  this.load.audio('rock', 'assets/sounds/rock_break.wav');
+  this.load.audio('speed', 'assets/sounds/speed.wav');
+  this.load.audio('health', 'assets/sounds/health.wav');
+  this.load.audio('port', 'assets/sounds/port.wav');
 }

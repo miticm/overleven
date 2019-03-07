@@ -1,14 +1,36 @@
-import { hp, gold, maxHealth} from "./game";
+import {
+  hp,
+  gold,
+  maxHealth,
+  enemyCount,
+  fireSound,
+  damageSound,
+  bombSound,
+  rockSound,
+  deathSound,
+  newLevelSound,
+  speedSound,
+  healthSound,
+  portSound
+} from "./game";
+
+let muted = false;
+
 export class InfoScene extends Phaser.Scene {
   constructor() {
-    super({ key: "info", active: false });
+    super({
+      key: "info",
+      active: false
+    });
     this.hp = hp;
     this.gold = gold;
     this.maxHealth = maxHealth;
+    this.enemiesRemaining = enemyCount;
+    this.muted = false;
   }
 
   create() {
-    let info = this.add.text(10, 10, `HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`, {
+    let info = this.add.text(10, 10, `HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`, {
       font: "22px Arial",
       fill: "#fff000"
     });
@@ -28,46 +50,145 @@ export class InfoScene extends Phaser.Scene {
     // //  Listen for events from it
     game.events.on(
       "reduceHP",
-      function() {
+      function () {
         this.hp -= 1;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
 
     game.events.on(
       "increaseHP",
-      function() {
+      function () {
         this.hp = hp;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
 
     game.events.on(
+      "checkEnemiesDeath",
+      function () {
+        this.enemiesRemaining = enemyCount;
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
+      },
+      this
+    )
+
+    game.events.on(
       "increaseGold",
-      function() {
+      function () {
         this.gold += 25;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
+      },
+      this
+    );
+
+    game.events.on(
+      "fireSound",
+      function () {
+        if (!muted) {
+          fireSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "damageSound",
+      function () {
+        if (!muted) {
+          damageSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "bombSound",
+      function () {
+        if (!muted) {
+          bombSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "deathSound",
+      function () {
+        if (!muted) {
+          deathSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "newLevelSound",
+      function () {
+        if (!muted) {
+          newLevelSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "rockSound",
+      function () {
+        if (!muted) {
+          rockSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "speedSound",
+      function () {
+        if (!muted) {
+          speedSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "healthSound",
+      function () {
+        if (!muted) {
+          healthSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "portSound",
+      function () {
+        if (!muted) {
+          portSound.play();
+        }
       },
       this
     );
 
     shop.events.on(
       "goldByShield",
-      function() {
+      function () {
         this.gold -= 200;
         this.maxHealth += 10
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
 
     shop.events.on(
       "goldBySpeed",
-      function() {
+      function () {
         this.gold -= 100;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
@@ -95,12 +216,13 @@ export class InfoScene extends Phaser.Scene {
 
     sound.on(
       "pointerup",
-      function() {
+      function () {
         if (sound.text == 'Mute') {
           sound.setText('Unmute');
-        }
-        else {
+          muted = true;
+        } else {
           sound.setText('Mute');
+          muted = false;
         }
       }
     )
