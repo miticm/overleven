@@ -38,7 +38,7 @@ export class InfoScene extends Phaser.Scene {
     game.events.on(
       "increaseHP",
       function() {
-        this.hp += 5;
+        this.hp = hp;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
       },
       this
@@ -87,6 +87,7 @@ export class InfoScene extends Phaser.Scene {
       function() {
         this.gold -= potPrice;
         potPrice += 50;
+        this.hp = this.maxHealth;
         info.setText(`HP: ${this.maxHealth}\/${this.maxHealth}\nGold: ${this.gold}`);
       },
       this
