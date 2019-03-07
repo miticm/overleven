@@ -1,7 +1,12 @@
 // Game scene
 import "phaser";
-import { enemyMovement } from "./enemy-ai.js";
-import { currentBlock, getRandomInt } from "./generic-functions.js";
+import {
+  enemyMovement
+} from "./enemy-ai.js";
+import {
+  currentBlock,
+  getRandomInt
+} from "./generic-functions.js";
 import {
   HEIGHT,
   WIDTH,
@@ -9,7 +14,9 @@ import {
   BLOCK_WIDTH,
   BLOCK_HEIGHT
 } from "./constants.js";
-import { InfoScene } from "./info";
+import {
+  InfoScene
+} from "./info";
 
 export const game = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -23,7 +30,7 @@ export const game = new Phaser.Class({
     this.track;
     this.text;
   },
-  preload: function() {
+  preload: function () {
     this.load.image("pause_button", "assets/pause_button.png");
     this.load.image("shop_button", "assets/shop_button.png");
   },
@@ -160,7 +167,7 @@ function create() {
   //update variables in game
   shopScence.events.on(
     "goldByShield",
-    function() {
+    function () {
       gold -= 200;
       maxHealth += 10;
     },
@@ -168,7 +175,7 @@ function create() {
   );
   shopScence.events.on(
     "goldBySpeed",
-    function() {
+    function () {
       gold -= 100;
       maxPlayerSpeed += 100;
     },
@@ -189,12 +196,10 @@ function create() {
   // player animations
   this.anims.create({
     key: "idle",
-    frames: [
-      {
-        key: "player",
-        frame: 0
-      }
-    ],
+    frames: [{
+      key: "player",
+      frame: 0
+    }],
     frameRate: 0
   });
 
@@ -292,16 +297,16 @@ function create() {
   const enemy = addEnemy.call(this, 64, 64);
   this.physics.add.overlap(player, enemy, hitPlayer, null, this);
 
-  const enemy2 = addEnemy.call(this, 256, 64);
-  this.physics.add.collider(enemy2, enemy);
-  this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
+  // const enemy2 = addEnemy.call(this, 256, 64);
+  // this.physics.add.collider(enemy2, enemy);
+  // this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
 
   this.input.on(
     "pointermove",
-    function(pointer) {
+    function (pointer) {
       mouse = pointer;
       const angle = BetweenPoints(player, pointer);
       SetToAngle(line, player.x, player.y, angle, 128);
@@ -311,7 +316,7 @@ function create() {
   );
   this.input.on(
     "pointerdown",
-    function(pointer) {
+    function (pointer) {
       target.x = pointer.x;
       target.y = pointer.y;
 
@@ -321,7 +326,7 @@ function create() {
   );
   this.input.keyboard.on(
     "keydown_Q",
-    function(event) {
+    function (event) {
       if (qCooldown <= 0) {
         //create the fireball
         const fireball = this.physics.add.sprite(
@@ -345,18 +350,16 @@ function create() {
             this
           );
         }
-
-        console.log("Q");
         qCooldown = 100;
       } else {
-        console.log("Q on Cooldown");
+        // Q is on cooldown
       }
     },
     this
   );
   this.input.keyboard.on(
     "keydown_W",
-    function(event) {
+    function (event) {
       if (wCooldown <= 0) {
         //create the Mine
         const mine = this.physics.add.sprite(player.x, player.y, "mine");
@@ -364,34 +367,30 @@ function create() {
 
         this.physics.add.overlap(mine, grounds, breakGround, null, this);
         this.physics.add.overlap(mine, player, mineTrip, null, this);
-
-        console.log("W");
         wCooldown = 1000;
         wActive = 150;
       } else {
-        console.log("W on Cooldown");
+        // W is on cooldown
       }
     },
     this
   );
   this.input.keyboard.on(
     "keydown_E",
-    function(event) {
+    function (event) {
       if (eCooldown <= 0) {
-        console.log("E");
         eActive = 300;
         eCooldown = 1000;
       } else {
-        console.log("E on Cooldown");
+        // E is on cooldown
       }
     },
     this
   );
   this.input.keyboard.on(
     "keydown_R",
-    function(event) {
+    function (event) {
       if (rCooldown <= 0 || (rActive > 0 && rCharges > 0)) {
-        console.log(rCharges);
         if (rCharges == 3) {
           rActive = 800;
           rCooldown = 3000;
@@ -408,7 +407,7 @@ function create() {
           player.setVelocity(0);
         }
       } else {
-        console.log("R on Cooldown");
+        // R is on cooldown
       }
     },
     this
@@ -495,11 +494,11 @@ function playerMove() {
 // Moves enemies
 function moveEnemies() {
   if (eActive <= 0) {
-    enemies.forEach(function(enemy) {
+    enemies.forEach(function (enemy) {
       enemyMovement(enemy.enemy, player, terrainMatrix, enemy.speed);
     });
   } else {
-    enemies.forEach(function(enemy) {
+    enemies.forEach(function (enemy) {
       enemyMovement(enemy.enemy, player, terrainMatrix, 0);
     });
   }
@@ -606,7 +605,12 @@ function initVariables() {
 
 // Adds a block in the game and into the matrix for AI pathing
 function addBlock(group, x, y) {
-  group.create(x * BLOCK_SIZE + 8, y * BLOCK_SIZE + 8, "ground");
+  group.create(x * BLOCK_SIZE, y * BLOCK_SIZE, "ground");
+  if (terrainMatrix[x]) {
+    terrainMatrix[x][y] = true;
+  } else {
+    terrainMatrix[x] = new Array(BLOCK_WIDTH);
+  }
   terrainMatrix[x][y] = true;
 }
 
@@ -614,7 +618,7 @@ function fireballHit(fireball, enemy) {
   fireball.disableBody(true, true);
   const DistanceBetween = Phaser.Math.Distance.Between;
 
-  const found = enemies.find(function(e) {
+  const found = enemies.find(function (e) {
     return e.enemy == enemy;
   });
 
@@ -653,7 +657,6 @@ function checkEnemiesDeath(i) {
 
       //add enemies for next wave
       for (let i = 0; i < waveCount + 1; i++) {
-        console.log("adding another Enemy");
         //spawn top
         if (i % 4 == 0) {
           newEnemy = addEnemy.call(Scene, getRandomInt(832), 64);

@@ -1,10 +1,27 @@
-import { hp, gold, maxHealth, enemyCount, fireSound, damageSound, bombSound, rockSound, deathSound, newLevelSound, speedSound, healthSound, portSound} from "./game";
+import {
+  hp,
+  gold,
+  maxHealth,
+  enemyCount,
+  fireSound,
+  damageSound,
+  bombSound,
+  rockSound,
+  deathSound,
+  newLevelSound,
+  speedSound,
+  healthSound,
+  portSound
+} from "./game";
 
 let muted = false;
 
 export class InfoScene extends Phaser.Scene {
   constructor() {
-    super({ key: "info", active: false });
+    super({
+      key: "info",
+      active: false
+    });
     this.hp = hp;
     this.gold = gold;
     this.maxHealth = maxHealth;
@@ -31,7 +48,7 @@ export class InfoScene extends Phaser.Scene {
     // //  Listen for events from it
     game.events.on(
       "reduceHP",
-      function() {
+      function () {
         this.hp -= 1;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
@@ -40,7 +57,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "increaseHP",
-      function() {
+      function () {
         this.hp += 5;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
@@ -49,7 +66,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "checkEnemiesDeath",
-      function() {
+      function () {
         this.enemiesRemaining = enemyCount;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
@@ -58,7 +75,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "increaseGold",
-      function() {
+      function () {
         this.gold += 200;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
@@ -67,7 +84,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "fireSound",
-      function() {
+      function () {
         if (!muted) {
           fireSound.play();
         }
@@ -77,7 +94,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "damageSound",
-      function() {
+      function () {
         if (!muted) {
           damageSound.play();
         }
@@ -87,7 +104,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "bombSound",
-      function() {
+      function () {
         if (!muted) {
           bombSound.play();
         }
@@ -97,7 +114,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "deathSound",
-      function() {
+      function () {
         if (!muted) {
           deathSound.play();
         }
@@ -107,7 +124,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "newLevelSound",
-      function() {
+      function () {
         if (!muted) {
           newLevelSound.play();
         }
@@ -117,7 +134,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "rockSound",
-      function() {
+      function () {
         if (!muted) {
           rockSound.play();
         }
@@ -127,7 +144,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "speedSound",
-      function() {
+      function () {
         if (!muted) {
           speedSound.play();
         }
@@ -137,7 +154,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "healthSound",
-      function() {
+      function () {
         if (!muted) {
           healthSound.play();
         }
@@ -147,7 +164,7 @@ export class InfoScene extends Phaser.Scene {
 
     game.events.on(
       "portSound",
-      function() {
+      function () {
         if (!muted) {
           portSound.play();
         }
@@ -157,7 +174,7 @@ export class InfoScene extends Phaser.Scene {
 
     shop.events.on(
       "goldByShield",
-      function() {
+      function () {
         this.gold -= 200;
         this.maxHealth += 10
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
@@ -167,7 +184,7 @@ export class InfoScene extends Phaser.Scene {
 
     shop.events.on(
       "goldBySpeed",
-      function() {
+      function () {
         this.gold -= 100;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
@@ -176,12 +193,11 @@ export class InfoScene extends Phaser.Scene {
 
     sound.on(
       "pointerup",
-      function() {
+      function () {
         if (sound.text == 'Mute') {
           sound.setText('Unmute');
           muted = true;
-        }
-        else {
+        } else {
           sound.setText('Mute');
           muted = false;
         }
