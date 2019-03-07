@@ -1,4 +1,7 @@
-import { hp, gold, maxHealth, enemyCount, fireSound} from "./game";
+import { hp, gold, maxHealth, enemyCount, fireSound, damageSound, bombSound, rockSound, deathSound, newLevelSound, speedSound, healthSound, portSound} from "./game";
+
+let muted = false;
+
 export class InfoScene extends Phaser.Scene {
   constructor() {
     super({ key: "info", active: false });
@@ -65,9 +68,88 @@ export class InfoScene extends Phaser.Scene {
     game.events.on(
       "fireSound",
       function() {
-        console.log(this.muted);
-        if (!this.muted) {
+        if (!muted) {
           fireSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "damageSound",
+      function() {
+        if (!muted) {
+          damageSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "bombSound",
+      function() {
+        if (!muted) {
+          bombSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "deathSound",
+      function() {
+        if (!muted) {
+          deathSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "newLevelSound",
+      function() {
+        if (!muted) {
+          newLevelSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "rockSound",
+      function() {
+        if (!muted) {
+          rockSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "speedSound",
+      function() {
+        if (!muted) {
+          speedSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "healthSound",
+      function() {
+        if (!muted) {
+          healthSound.play();
+        }
+      },
+      this
+    );
+
+    game.events.on(
+      "portSound",
+      function() {
+        if (!muted) {
+          portSound.play();
         }
       },
       this
@@ -97,11 +179,11 @@ export class InfoScene extends Phaser.Scene {
       function() {
         if (sound.text == 'Mute') {
           sound.setText('Unmute');
-          this.muted = true;
+          muted = true;
         }
         else {
           sound.setText('Mute');
-          this.muted = false;
+          muted = false;
         }
       }
     )

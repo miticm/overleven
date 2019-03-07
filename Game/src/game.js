@@ -67,17 +67,17 @@ let waveCount = 1;
 var target = new Phaser.Math.Vector2();
 
 // Sounds
-let deathSound;
-let bombSound;
+export let deathSound;
+export let bombSound;
 let bombOne = true;
-let damageSound;
+export let damageSound;
 export let fireSound;
-let newLevelSound;
-let rockSound;
+export let newLevelSound;
+export let rockSound;
 let shopSound;
-let healthSound;
-let speedSound;
-let portSound;
+export let healthSound;
+export let speedSound;
+export let portSound;
 
 // Function is ran at start of game, initialize all sprites and math
 function create() {
@@ -408,7 +408,7 @@ function create() {
 
           //make the player stay still
           moving = false;
-          portSound.play();
+          Scene.events.emit("portSound");
           player.setVelocity(0);
         }
       } else {
@@ -513,7 +513,7 @@ function moveEnemies() {
 function breakGround(bullet, ground) {
   bullet.disableBody(true, true);
   ground.disableBody(true, true);
-  rockSound.play();
+  Scene.events.emit("rockSound");
   const coord = currentBlock(ground.x, ground.y);
   terrainMatrix[coord.x][coord.y] = false;
   let iteminfo = generateItems();
@@ -559,7 +559,7 @@ function speedUp(player, item) {
   if (playerSpeed < maxPlayerSpeed) {
     playerSpeed += 50;
   }
-  speedSound.play();
+  Scene.events.emit("speedSound");
 }
 
 function increaseHealth(player, item) {
@@ -572,7 +572,7 @@ function increaseHealth(player, item) {
     }
     Scene.events.emit("increaseHP");
   }
-  healthSound.play();
+  Scene.events.emit("healthSound");
 }
 
 // Initializes the terrain matrix for AI pathing
@@ -644,7 +644,7 @@ function checkEnemiesDeath(i) {
   let newEnemy;
   //check if each enemy is dead
   if (enemies[i].hp <= 0) {
-    deathSound.play();
+    Scene.events.emit("deathSound");
     enemies[i].enemy.disableBody(true, true);
     enemies.splice(i, 1);
     gold += 200;
@@ -654,7 +654,7 @@ function checkEnemiesDeath(i) {
     if (enemyCount == 0) {
       waveCount++;
 
-      newLevelSound.play();
+      Scene.events.emit("newLevelSound");
 
       //add enemies for next wave
       for (let i = 0; i < waveCount + 1; i++) {
@@ -699,7 +699,7 @@ function mineTrip(mine, player) {
   if (wActive <= 0) {
     mine.anims.play("explode", true);
     if (bombOne) {
-      bombSound.play();
+      Scene.events.emit("bombSound");
       bombOne = false;
     }
     if (mine.visible == false) {
@@ -729,7 +729,7 @@ function mineTrip(mine, player) {
 function hitPlayer(player, enemy) {
   if (inv <= 0) {
     hp -= 1;
-    damageSound.play();
+    Scene.events.emit("damageSound");
     this.events.emit("reduceHP");
     if (hp <= 0) {
       this.scene.remove("info");
