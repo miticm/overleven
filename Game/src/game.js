@@ -99,6 +99,7 @@ let shopSound;
 export let healthSound;
 export let speedSound;
 export let portSound;
+let velocity;
 
 
 // Function is ran at start of game, initialize all sprites and math
@@ -119,7 +120,7 @@ function create() {
   const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
   const SetToAngle = Phaser.Geom.Line.SetToAngle;
   const velocityFromRotation = this.physics.velocityFromRotation;
-  const velocity = new Phaser.Math.Vector2();
+  velocity = new Phaser.Math.Vector2();
   const line = new Phaser.Geom.Line();
   initVariables.call(this);
 
@@ -649,7 +650,7 @@ function create() {
 // Function is ran every frame to update the game
 function update() {
   playerMove();
-  cooldowns();
+  cooldowns.call(this);
   moveEnemies();
   // this.cameras.main.centerOn(player.x, player.y);
 }
@@ -670,7 +671,7 @@ function cooldowns() {
   if (enemyShootCooldown >= 300){
     enemies.forEach(function (enemy) {
       if (enemy.shoot){
-        //enemyShoot(enemy);
+        enemyShoot.call(this, enemy);
       }
 
     });
@@ -706,16 +707,17 @@ function cooldowns() {
 
 function enemyShoot(enemy) {
   //create the bullet
-  const bullet = bullet.physics.add.sprite(
-    enemy.x,
-    enemy.y,
+  console.log(enemy);
+  const bullet = Scene.physics.add.sprite(
+    enemy.enemy.x,
+    enemy.enemy.y,
     "bullet"
   );
-  //Scene.events.emit("fireSound");
   bullet
-    .enableBody(true, bullet.x, bullet.y, true, true)
-    .setVelocity(velocity.x, velocity.y);
-  this.physics.add.overlap(player, bullet, hitPlayer, null, this);
+    .enableBody(true, enemy.enemy.x, enemy.enemy.y, true, true)
+    .setVelocity(player.x, player.y);
+  Scene.physics.add.overlap(player, bullet, hitPlayer, null, Scene);
+  Scene.events.emit("fireSound");
 
 }
 

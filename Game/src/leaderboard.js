@@ -20,6 +20,7 @@ export const leaderboard = new Phaser.Class({
     this.load.image("play_button", "assets/start.png");
     this.load.image("leaderboard_button", "assets/leaderboard.png");
     this.load.image("game_title", "assets/overleven.png");
+    this.load.image("retry_button", "assets/retry_button.png");
   },
 
   create: function() {
@@ -31,19 +32,20 @@ export const leaderboard = new Phaser.Class({
       .sprite(
         this.game.renderer.width / 2,
         this.game.renderer.height / 2 + 250,
-        "play_button"
+        "retry_button"
       )
       .setDepth(1);
     playButton.setInteractive();
+    playButton.setScale(0.2, 0.2);
 
     playButton.on("pointerover", () => {
       //make play button bloom
-      playButton.setScale(1.5, 1.5);
+      playButton.setScale(0.3, 0.3);
     });
 
     playButton.on("pointerout", () => {
       //reset button bloom
-      playButton.setScale(1, 1);
+      playButton.setScale(0.2, 0.2);
     });
 
     playButton.on("pointerup", () => {

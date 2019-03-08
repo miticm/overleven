@@ -44,6 +44,7 @@ export const pause = new Phaser.Class({
       this.scene.remove("info");
       this.scene.stop("pause");
       this.scene.start("menu");
+      location.reload();
     });
     let playButton = this.add
       .sprite(
