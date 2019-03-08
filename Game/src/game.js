@@ -51,6 +51,10 @@ let moving = false;
 let player;
 let mouse;
 let controls;
+let hud_Q;
+let hud_W;
+let hud_E;
+let hud_R;
 let cooldown = 0;
 let eActive = 0;
 let wActive = 0;
@@ -60,6 +64,7 @@ let qCooldown = 0;
 let wCooldown = 0;
 let eCooldown = 0;
 let rCooldown = 0;
+let enemyShootCooldown = 0;
 let knightR_Cooldown = 0;
 let knightRActive = false;
 let playerSpeed = 140;
@@ -144,6 +149,69 @@ function create() {
     this.scene.launch("pause");
     this.scene.pause("game");
   });
+
+  // Add HUD of Abilites
+  if (characterSelected == "player"){
+    hud_Q = this.add
+      .sprite(
+        50,
+        this.game.renderer.height - 50,
+        "wizardQ"
+      )
+      .setDepth(1);
+    hud_W = this.add
+      .sprite(
+        50+65,
+        this.game.renderer.height - 50,
+        "wizardW"
+      )
+      .setDepth(1);
+    hud_E = this.add
+      .sprite(
+        50+65*2,
+        this.game.renderer.height - 50,
+        "wizardE"
+      )
+      .setDepth(1);
+    hud_R = this.add
+      .sprite(
+        50+65*3,
+        this.game.renderer.height - 50,
+        "wizardR"
+      )
+      .setDepth(1);
+  }
+
+  if (characterSelected == "playerKnight"){
+    hud_Q = this.add
+      .sprite(
+        50,
+        this.game.renderer.height - 50,
+        "knightQ"
+      )
+      .setDepth(1);
+    hud_W = this.add
+      .sprite(
+        50+65,
+        this.game.renderer.height - 50,
+        "knightW"
+      )
+      .setDepth(1);
+    hud_E = this.add
+      .sprite(
+        50+65*2,
+        this.game.renderer.height - 50,
+        "knightE"
+      )
+      .setDepth(1);
+    hud_R = this.add
+      .sprite(
+        50+65*3,
+        this.game.renderer.height - 50,
+        "knightR"
+      )
+      .setDepth(1);
+  }
 
   //add shop button
   let shopButton = this.add
@@ -283,6 +351,17 @@ function create() {
     repeat: -1
   });
 
+  // Octo enemy animation
+  this.anims.create({
+    key: "octoEnemy",
+    frames: this.anims.generateFrameNumbers("octoEnemy", {
+      start: 0,
+      end: 1
+    }),
+    frameRate: 4,
+    repeat: -1
+  });
+
   // Player Fireball Animation
   this.anims.create({
     key: "fireball",
@@ -341,6 +420,9 @@ function create() {
   const enemy2 = addEnemy.call(this, 256, 64);
   this.physics.add.collider(enemy2, enemy);
   this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
+
+  const enemy3 = addOctoEnemy.call(this, 64, 100);
+  this.physics.add.overlap(player, enemy3, hitPlayer, null, this);
 
   // Controls
   controls = this.input.keyboard.createCursorKeys();
@@ -486,6 +568,7 @@ function create() {
             );
           }
           qCooldown = 50;
+          hud_Q.alpha = 0.5;
         } else {
           // Q is on cooldown
         }
@@ -515,6 +598,7 @@ function create() {
             );
           }
           wCooldown = 700;
+          hud_W.alpha = 0.5;
         } else {
           // W is on cooldown
         }
@@ -528,6 +612,7 @@ function create() {
         if (eCooldown <= 0) {
           inv = 300;
           eCooldown = 1000;
+          hud_E.alpha = 0.5;
         } else {
           // E is on cooldown
         }
@@ -543,8 +628,8 @@ function create() {
             rActive = 800;
             rCooldown = 3000;
           }
-
           if (rActive > 0 && rCharges > 0) {
+            rCharges -= 1;
             saveSpeed = playerSpeed;
             playerSpeed = maxPlayerSpeed;
             knightR_Cooldown = 100;
@@ -580,15 +665,58 @@ function cooldowns() {
   wActive -= 1;
   inv -= 1;
   knightR_Cooldown -= 1;
+  enemyShootCooldown += 1;
 
+  if (enemyShootCooldown >= 300){
+    enemies.forEach(function (enemy) {
+      if (enemy.shoot){
+        //enemyShoot(enemy);
+      }
+
+    });
+    enemyShootCooldown = 0;
+  }
+
+  // HUD Q
+  if (qCooldown <= 0) {
+    hud_Q.alpha = 1;
+  }
+  // HUD W
+  if (wCooldown <= 0) {
+    hud_W.alpha = 1;
+  }
+  // HUD E
+  if (eCooldown <= 0) {
+    hud_E.alpha = 1;
+  }
+  // HUD R
+  if (rCharges <= 0) {
+    hud_R.alpha = 0.5;
+  }
   if (rCooldown <= 0) {
     rCharges = 3;
+    hud_R.alpha = 1;
   }
 
   if (knightR_Cooldown <= 0 && knightRActive == true) {
     playerSpeed = saveSpeed;
     knightRActive = false;
   }
+}
+
+function enemyShoot(enemy) {
+  //create the bullet
+  const bullet = bullet.physics.add.sprite(
+    enemy.x,
+    enemy.y,
+    "bullet"
+  );
+  //Scene.events.emit("fireSound");
+  bullet
+    .enableBody(true, bullet.x, bullet.y, true, true)
+    .setVelocity(velocity.x, velocity.y);
+  this.physics.add.overlap(player, bullet, hitPlayer, null, this);
+
 }
 
 // Moves the player
@@ -747,6 +875,7 @@ function initVariables() {
   wCooldown = 0;
   eCooldown = 0;
   rCooldown = 0;
+  enemyShootCooldown = 0;
   playerSpeed = 140;
   inv = 30;
   hp = 20;
@@ -754,7 +883,7 @@ function initVariables() {
   mouseY = 0;
   moving = false;
   waveCount = 1;
-  enemyCount = 2;
+  enemyCount = 3;
 }
 
 // Adds a block in the game and into the matrix for AI pathing
@@ -956,9 +1085,22 @@ function addEnemy(x, y) {
   enemies.push({
     enemy: enemy,
     hp: waveCount * 2,
-    speed: 50 + waveCount * 2
+    speed: 50 + waveCount * 2,
+    shoot: false
   });
   enemy.anims.play("enemy", true);
+  return enemy;
+}
+
+function addOctoEnemy(x, y) {
+  const enemy = this.physics.add.sprite(x, y, "octoEnemy");
+  enemies.push({
+    enemy: enemy,
+    hp: waveCount * 2,
+    speed: 0,
+    shoot: true
+  });
+  enemy.anims.play("octoEnemy", true);
   return enemy;
 }
 

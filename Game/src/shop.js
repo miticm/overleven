@@ -24,10 +24,20 @@ export const shop = new Phaser.Class({
   preload: function () {
     this.load.image("menu_button", "assets/menu_button.png");
     this.load.image("resume_button", "assets/resume_button.png");
+    this.load.image("resume", "assets/resume.png");
+
     this.load.image("shield", "assets/shield.png");
+    this.load.image("shieldPlus", "assets/shieldPlus.png");
+
     this.load.image("speed", "assets/speed.png");
+    this.load.image("speedBoost", "assets/speedBoost.png");
+
     this.load.image("dmg", "assets/dmg.png");
+    this.load.image("damage", "assets/damage.png");
+
     this.load.image("aid", "assets/firstaid.png");
+    this.load.image("heart", "assets/heart.png");
+
 
   },
 
@@ -49,19 +59,19 @@ export const shop = new Phaser.Class({
     let shield = this.add
       .sprite(
         (WIDTH / 3) - 50, HEIGHT / 5,
-        "shield"
+        "shieldPlus"
       )
       .setDepth(1);
-    shield.setScale(0.15, 0.15);
+    shield.setScale(0.95, 0.95);
     shield.setInteractive();
 
     shield.on("pointerover", () => {
       //make play button bloom
-        shield.setScale(0.18, 0.18);
+        shield.setScale(1, 1);
     });
     shield.on("pointerout", () => {
       //reset button bloom
-        shield.setScale(0.15, 0.15);
+        shield.setScale(0.95, 0.95);
     });
 
     shield.on(
@@ -77,11 +87,11 @@ export const shop = new Phaser.Class({
         },
         this
     );
-    
+
     const text2 = this.add.text(WIDTH / 3, (HEIGHT / 5) + 60, "Inc Max Speed ($100)", {
     fontSize: "32px"
     });
-    
+
     if(speedBought == true){
         text2.setText("SOLD");
     }
@@ -90,19 +100,19 @@ export const shop = new Phaser.Class({
     let speed = this.add
       .sprite(
         (WIDTH / 3) - 50, (HEIGHT / 5) + 60,
-        "speed"
+        "speedBoost"
       )
       .setDepth(1);
-    speed.setScale(0.15, 0.15);
+    speed.setScale(0.95, 0.95);
     speed.setInteractive();
 
     speed.on("pointerover", () => {
       //make play button bloom
-        speed.setScale(0.18, 0.18);
+        speed.setScale(1, 1);
     });
     speed.on("pointerout", () => {
       //reset button bloom
-        speed.setScale(0.15, 0.15);
+        speed.setScale(0.95, 0.95);
     });
 
     speed.on(
@@ -115,7 +125,7 @@ export const shop = new Phaser.Class({
                     speedBought = true;
                     text2.setText("SOLD");
                 }
-                
+
             }
         },
         this
@@ -133,19 +143,19 @@ export const shop = new Phaser.Class({
     let dmg = this.add
       .sprite(
         (WIDTH / 3) - 50, (HEIGHT / 5) + 120,
-        "dmg"
+        "damage"
       )
       .setDepth(1);
-    dmg.setScale(0.15, 0.15);
+    dmg.setScale(0.95, 0.95);
     dmg.setInteractive();
 
     dmg.on("pointerover", () => {
       //make play button bloom
-        dmg.setScale(0.18, 0.18);
+        dmg.setScale(1, 1);
     });
     dmg.on("pointerout", () => {
       //reset button bloom
-        dmg.setScale(0.15, 0.15);
+        dmg.setScale(0.95, 0.95);
     });
 
     dmg.on(
@@ -162,7 +172,7 @@ export const shop = new Phaser.Class({
                         text3.setText("SOLD");
                     }
                 }
-                
+
             }
         },
         this
@@ -180,19 +190,19 @@ export const shop = new Phaser.Class({
     let pot = this.add
       .sprite(
         (WIDTH / 3) - 50, (HEIGHT / 5) + 180,
-        "aid"
+        "heart"
       )
       .setDepth(1);
-    pot.setScale(1, 1);
+    pot.setScale(0.95, 0.95);
     pot.setInteractive();
 
     pot.on("pointerover", () => {
       //make play button bloom
-        pot.setScale(1.18, 1.18);
+        pot.setScale(1, 1);
     });
     pot.on("pointerout", () => {
       //reset button bloom
-        pot.setScale(1, 1);
+        pot.setScale(0.95, 0.95);
     });
 
     pot.on(
@@ -211,7 +221,7 @@ export const shop = new Phaser.Class({
                     }
                   }
                 }
-                
+
             }
         },
         this
@@ -219,21 +229,21 @@ export const shop = new Phaser.Class({
 
     let playButton = this.add
       .sprite(
-        this.game.renderer.width - 725,
-        this.game.renderer.height - 100,
-        "resume_button"
+        this.game.renderer.width / 2,
+        this.game.renderer.height - 150,
+        "resume"
       )
       .setDepth(1);
-    playButton.setScale(0.15, 0.15);
+    playButton.setScale(0.95, 0.95);
     playButton.setInteractive();
 
     playButton.on("pointerover", () => {
       //make play button bloom
-      playButton.setScale(0.25, 0.25);
+      playButton.setScale(1, 1);
     });
     playButton.on("pointerout", () => {
       //reset button bloom
-      playButton.setScale(0.15, 0.15);
+      playButton.setScale(0.95, 0.95);
     });
 
     playButton.on(

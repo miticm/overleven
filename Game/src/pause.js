@@ -13,6 +13,7 @@ export const pause = new Phaser.Class({
   preload: function() {
     this.load.image("menu_button", "assets/menu_button.png");
     this.load.image("resume_button", "assets/resume_button.png");
+    this.load.image("resume", "assets/resume.png");
   },
 
   create: function() {
@@ -22,7 +23,7 @@ export const pause = new Phaser.Class({
     let menuButton = this.add
       .sprite(
         this.game.renderer.width - 150,
-        this.game.renderer.height - 100,
+        this.game.renderer.height - 150,
         "menu_button"
       )
       .setDepth(1);
@@ -47,20 +48,20 @@ export const pause = new Phaser.Class({
     let playButton = this.add
       .sprite(
         this.game.renderer.width - 725,
-        this.game.renderer.height - 100,
-        "resume_button"
+        this.game.renderer.height - 150,
+        "resume"
       )
       .setDepth(1);
-    playButton.setScale(0.15, 0.15);
+    playButton.setScale(0.95, 0.95);
     playButton.setInteractive();
 
     playButton.on("pointerover", () => {
       //make play button bloom
-      playButton.setScale(0.25, 0.25);
+      playButton.setScale(1, 1);
     });
     playButton.on("pointerout", () => {
       //reset button bloom
-      playButton.setScale(0.15, 0.15);
+      playButton.setScale(0.95, 0.95);
     });
 
     playButton.on(
