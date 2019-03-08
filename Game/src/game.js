@@ -60,7 +60,10 @@ let qCooldown = 0;
 let wCooldown = 0;
 let eCooldown = 0;
 let rCooldown = 0;
+let knightR_Cooldown = 0;
+let knightRActive = false;
 let playerSpeed = 140;
+let saveSpeed = playerSpeed;
 let maxPlayerSpeed = 400;
 let inv = 30;
 export let hp = 20;
@@ -461,7 +464,7 @@ function create() {
       "keydown_Q",
       function (event) {
         if (qCooldown <= 0) {
-          //create the fireball
+          //create the sword
           const sword = this.physics.add.sprite(
             player.x,
             player.y,
@@ -518,6 +521,41 @@ function create() {
       },
       this
     );
+
+    this.input.keyboard.on(
+      "keydown_E",
+      function (event) {
+        if (eCooldown <= 0) {
+          inv = 300;
+          eCooldown = 1000;
+        } else {
+          // E is on cooldown
+        }
+      },
+      this
+    );
+
+    this.input.keyboard.on(
+      "keydown_R",
+      function (event) {
+        if (rCooldown <= 0 || (rActive > 0 && rCharges > 0)) {
+          if (rCharges == 3) {
+            rActive = 800;
+            rCooldown = 3000;
+          }
+
+          if (rActive > 0 && rCharges > 0) {
+            saveSpeed = playerSpeed;
+            playerSpeed = maxPlayerSpeed;
+            knightR_Cooldown = 100;
+            knightRActive = true;
+          }
+        } else {
+          // R is on cooldown
+        }
+      },
+      this
+    );
   }
 
   this.scene.add("info", InfoScene, true);
@@ -541,9 +579,15 @@ function cooldowns() {
   rActive -= 1;
   wActive -= 1;
   inv -= 1;
+  knightR_Cooldown -= 1;
 
   if (rCooldown <= 0) {
     rCharges = 3;
+  }
+
+  if (knightR_Cooldown <= 0 && knightRActive == true) {
+    playerSpeed = saveSpeed;
+    knightRActive = false;
   }
 }
 
@@ -805,6 +849,7 @@ function circle_slashHit(sword, enemy) {
 function circle_slashComplete (animation, frame, circle_slash)
 {
     //  Animation is over, remove circle_slash
+    player.setVelocity(0);
     circle_slash.disableBody(true, true);
 }
 
