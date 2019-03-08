@@ -78,7 +78,7 @@ export class InfoScene extends Phaser.Scene {
     game.events.on(
       "increaseGold",
       function () {
-        this.gold += 25;
+        this.gold += 10;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
@@ -198,7 +198,7 @@ export class InfoScene extends Phaser.Scene {
       function() {
         this.gold -= dmgPrice;
         dmgPrice *= 3;
-        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );
@@ -209,7 +209,7 @@ export class InfoScene extends Phaser.Scene {
         this.gold -= potPrice;
         potPrice += 50;
         this.hp = this.maxHealth;
-        info.setText(`HP: ${this.maxHealth}\/${this.maxHealth}\nGold: ${this.gold}`);
+        info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
     );

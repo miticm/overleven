@@ -991,7 +991,7 @@ function checkEnemiesDeath(i) {
     Scene.events.emit("deathSound");
     enemies[i].enemy.disableBody(true, true);
     enemies.splice(i, 1);
-    gold += 25;
+    gold += 10;
     Scene.events.emit("increaseGold");
     enemyCount -= 1;
     if (enemyCount == 0) {
