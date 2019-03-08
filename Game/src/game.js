@@ -8,6 +8,9 @@ import {
   getRandomInt
 } from "./generic-functions.js";
 import {
+  characterSelected
+} from "./char_select.js";
+import {
   HEIGHT,
   WIDTH,
   BLOCK_SIZE,
@@ -48,6 +51,10 @@ let moving = false;
 let player;
 let mouse;
 let controls;
+let hud_Q;
+let hud_W;
+let hud_E;
+let hud_R;
 let cooldown = 0;
 let eActive = 0;
 let wActive = 0;
@@ -57,7 +64,11 @@ let qCooldown = 0;
 let wCooldown = 0;
 let eCooldown = 0;
 let rCooldown = 0;
+let enemyShootCooldown = 0;
+let knightR_Cooldown = 0;
+let knightRActive = false;
 let playerSpeed = 140;
+let saveSpeed = playerSpeed;
 let maxPlayerSpeed = 400;
 let inv = 30;
 export let hp = 20;
@@ -88,6 +99,8 @@ let shopSound;
 export let healthSound;
 export let speedSound;
 export let portSound;
+let velocity;
+
 
 // Function is ran at start of game, initialize all sprites and math
 function create() {
@@ -107,7 +120,7 @@ function create() {
   const BetweenPoints = Phaser.Math.Angle.BetweenPoints;
   const SetToAngle = Phaser.Geom.Line.SetToAngle;
   const velocityFromRotation = this.physics.velocityFromRotation;
-  const velocity = new Phaser.Math.Vector2();
+  velocity = new Phaser.Math.Vector2();
   const line = new Phaser.Geom.Line();
   initVariables.call(this);
 
@@ -138,6 +151,69 @@ function create() {
     this.scene.pause("game");
   });
 
+  // Add HUD of Abilites
+  if (characterSelected == "player"){
+    hud_Q = this.add
+      .sprite(
+        50,
+        this.game.renderer.height - 50,
+        "wizardQ"
+      )
+      .setDepth(1);
+    hud_W = this.add
+      .sprite(
+        50+65,
+        this.game.renderer.height - 50,
+        "wizardW"
+      )
+      .setDepth(1);
+    hud_E = this.add
+      .sprite(
+        50+65*2,
+        this.game.renderer.height - 50,
+        "wizardE"
+      )
+      .setDepth(1);
+    hud_R = this.add
+      .sprite(
+        50+65*3,
+        this.game.renderer.height - 50,
+        "wizardR"
+      )
+      .setDepth(1);
+  }
+
+  if (characterSelected == "playerKnight"){
+    hud_Q = this.add
+      .sprite(
+        50,
+        this.game.renderer.height - 50,
+        "knightQ"
+      )
+      .setDepth(1);
+    hud_W = this.add
+      .sprite(
+        50+65,
+        this.game.renderer.height - 50,
+        "knightW"
+      )
+      .setDepth(1);
+    hud_E = this.add
+      .sprite(
+        50+65*2,
+        this.game.renderer.height - 50,
+        "knightE"
+      )
+      .setDepth(1);
+    hud_R = this.add
+      .sprite(
+        50+65*3,
+        this.game.renderer.height - 50,
+        "knightR"
+      )
+      .setDepth(1);
+  }
+
   //add shop button
   let shopButton = this.add
     .sprite(
@@ -161,7 +237,7 @@ function create() {
   shopButton.on("pointerup", () => {
     this.scene.launch('shop');
     this.scene.pause('game');
-    
+
     // enemies = [];
     // terrainMatrix = undefined;
     //go to next scene
@@ -210,15 +286,16 @@ function create() {
   player = this.physics.add.sprite(
     this.game.renderer.width / 2,
     this.game.renderer.height / 2,
-    "player"
+    characterSelected
   );
+
   player.setCollideWorldBounds(true);
 
   // player animations
   this.anims.create({
     key: "idle",
     frames: [{
-      key: "player",
+      key: characterSelected,
       frame: 0
     }],
     frameRate: 0
@@ -226,7 +303,7 @@ function create() {
 
   this.anims.create({
     key: "down",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 1,
       end: 2
     }),
@@ -236,7 +313,7 @@ function create() {
 
   this.anims.create({
     key: "up",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 7,
       end: 8
     }),
@@ -246,7 +323,7 @@ function create() {
 
   this.anims.create({
     key: "left",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 3,
       end: 4
     }),
@@ -256,7 +333,7 @@ function create() {
 
   this.anims.create({
     key: "right",
-    frames: this.anims.generateFrameNumbers("player", {
+    frames: this.anims.generateFrameNumbers(characterSelected, {
       start: 5,
       end: 6
     }),
@@ -275,7 +352,18 @@ function create() {
     repeat: -1
   });
 
-  // Player Ability Animation
+  // Octo enemy animation
+  this.anims.create({
+    key: "octoEnemy",
+    frames: this.anims.generateFrameNumbers("octoEnemy", {
+      start: 0,
+      end: 1
+    }),
+    frameRate: 4,
+    repeat: -1
+  });
+
+  // Player Fireball Animation
   this.anims.create({
     key: "fireball",
     frames: this.anims.generateFrameNumbers("fireball", {
@@ -286,7 +374,7 @@ function create() {
     repeat: -1
   });
 
-  //Mine explosion animation
+  // Mine explosion animation
   this.anims.create({
     key: "explode",
     frames: this.anims.generateFrameNumbers("mine", {
@@ -295,6 +383,18 @@ function create() {
     }),
     frameRate: 12,
     hideOnComplete: true
+  });
+
+  // Circle slash animation
+  this.anims.create({
+    key: "circle_slash",
+    frames: this.anims.generateFrameNumbers("circle_slash", {
+      start: 0,
+      end: 3
+    }),
+    frameRate: 12,
+    repeat: 0
+    //hideOnComplete: true
   });
 
   // Populate terrain matrix for AI
@@ -345,94 +445,201 @@ function create() {
     },
     this
   );
-  this.input.keyboard.on(
-    "keydown_Q",
-    function (event) {
-      if (qCooldown <= 0) {
-        //create the fireball
-        const fireball = this.physics.add.sprite(
-          player.x,
-          player.y,
-          "fireball"
-        );
-        Scene.events.emit("fireSound");
-        fireball
-          .enableBody(true, player.x, player.y, true, true)
-          .setVelocity(velocity.x, velocity.y);
 
-        this.physics.add.overlap(fireball, grounds, breakGround, null, this);
-        fireball.anims.play("fireball", true);
-        for (let i = 0; i < enemies.length; i++) {
-          this.physics.add.overlap(
-            fireball,
-            enemies[i].enemy,
-            fireballHit,
-            null,
-            this
+  // Wizard Abilities
+  if (characterSelected == "player"){
+    this.input.keyboard.on(
+      "keydown_Q",
+      function (event) {
+        if (qCooldown <= 0) {
+          //create the fireball
+          const fireball = this.physics.add.sprite(
+            player.x,
+            player.y,
+            "fireball"
           );
+          Scene.events.emit("fireSound");
+          fireball
+            .enableBody(true, player.x, player.y, true, true)
+            .setVelocity(velocity.x, velocity.y);
+
+          this.physics.add.overlap(fireball, grounds, breakGround, null, this);
+          fireball.anims.play("fireball", true);
+          for (let i = 0; i < enemies.length; i++) {
+            this.physics.add.overlap(
+              fireball,
+              enemies[i].enemy,
+              fireballHit,
+              null,
+              this
+            );
+          }
+          qCooldown = 100;
+        } else {
+          // Q is on cooldown
         }
-        qCooldown = 100;
-      } else {
-        // Q is on cooldown
-      }
-    },
-    this
-  );
-  this.input.keyboard.on(
-    "keydown_W",
-    function (event) {
-      if (wCooldown <= 0) {
-        //create the Mine
-        const mine = this.physics.add.sprite(player.x, player.y, "mine");
-        mine.enableBody(true, player.x, player.y, true, true);
+      },
+      this
+    );
+    this.input.keyboard.on(
+      "keydown_W",
+      function (event) {
+        if (wCooldown <= 0) {
+          //create the Mine
+          const mine = this.physics.add.sprite(player.x, player.y, "mine");
+          mine.enableBody(true, player.x, player.y, true, true);
 
-        this.physics.add.overlap(mine, grounds, breakGround, null, this);
-        this.physics.add.overlap(mine, player, mineTrip, null, this);
-        wCooldown = 1000;
-        wActive = 150;
-      } else {
-        // W is on cooldown
-      }
-    },
-    this
-  );
-  this.input.keyboard.on(
-    "keydown_E",
-    function (event) {
-      if (eCooldown <= 0) {
-        eActive = 300;
-        eCooldown = 1000;
-      } else {
-        // E is on cooldown
-      }
-    },
-    this
-  );
-  this.input.keyboard.on(
-    "keydown_R",
-    function (event) {
-      if (rCooldown <= 0 || (rActive > 0 && rCharges > 0)) {
-        if (rCharges == 3) {
-          rActive = 800;
-          rCooldown = 3000;
+          this.physics.add.overlap(mine, grounds, breakGround, null, this);
+          this.physics.add.overlap(mine, player, mineTrip, null, this);
+          wCooldown = 1000;
+          wActive = 150;
+        } else {
+          // W is on cooldown
         }
+      },
+      this
+    );
+    this.input.keyboard.on(
+      "keydown_E",
+      function (event) {
+        if (eCooldown <= 0) {
+          eActive = 300;
+          eCooldown = 1000;
+        } else {
+          // E is on cooldown
+        }
+      },
+      this
+    );
+    this.input.keyboard.on(
+      "keydown_R",
+      function (event) {
+        if (rCooldown <= 0 || (rActive > 0 && rCharges > 0)) {
+          if (rCharges == 3) {
+            rActive = 800;
+            rCooldown = 3000;
+          }
 
-        if (rActive > 0 && rCharges > 0) {
-          rCharges -= 1;
-          player.x = mouse.x;
-          player.y = mouse.y;
+          if (rActive > 0 && rCharges > 0) {
+            rCharges -= 1;
+            player.x = mouse.x;
+            player.y = mouse.y;
 
-          //make the player stay still
-          moving = false;
-          Scene.events.emit("portSound");
+            //make the player stay still
+            moving = false;
+            Scene.events.emit("portSound");
+            player.setVelocity(0);
+          }
+        } else {
+          // R is on cooldown
+        }
+      },
+      this
+    );
+  }
+
+  // Knight Abilites
+  if (characterSelected == "playerKnight") {
+    this.input.keyboard.on(
+      "keydown_Q",
+      function (event) {
+        if (qCooldown <= 0) {
+          //create the sword
+          const sword = this.physics.add.sprite(
+            player.x,
+            player.y,
+            "sword"
+          );
+          Scene.events.emit("fireSound");
+          sword
+            .enableBody(true, player.x, player.y, true, true)
+            .setVelocity(velocity.x, velocity.y);
+          sword.rotation = Phaser.Math.Angle.Between(player.x, player.y, mouse.x, mouse.y);
+          this.physics.add.overlap(sword, grounds, breakGround, null, this);
+          for (let i = 0; i < enemies.length; i++) {
+            this.physics.add.overlap(
+              sword,
+              enemies[i].enemy,
+              swordHit,
+              null,
+              this
+            );
+          }
+          qCooldown = 50;
+          hud_Q.alpha = 0.5;
+        } else {
+          // Q is on cooldown
+        }
+      },
+      this
+    );
+
+    this.input.keyboard.on(
+      "keydown_W",
+      function (event) {
+        if (wCooldown <= 0) {
+          //create the slash
+          const circle_slash = this.physics.add.sprite(player.x, player.y, "circle_slash");
+          // Halt the player
           player.setVelocity(0);
+          circle_slash.enableBody(true, player.x, player.y, true, true);
+          //this.physics.add.overlap(circle_slash, grounds, breakGround, null, this);
+          circle_slash.anims.play("circle_slash", true);
+          circle_slash.on('animationcomplete', circle_slashComplete, this);
+          for (let i = 0; i < enemies.length; i++) {
+            this.physics.add.overlap(
+              circle_slash,
+              enemies[i].enemy,
+              circle_slashHit,
+              null,
+              this
+            );
+          }
+          wCooldown = 700;
+          hud_W.alpha = 0.5;
+        } else {
+          // W is on cooldown
         }
-      } else {
-        // R is on cooldown
-      }
-    },
-    this
-  );
+      },
+      this
+    );
+
+    this.input.keyboard.on(
+      "keydown_E",
+      function (event) {
+        if (eCooldown <= 0) {
+          inv = 300;
+          eCooldown = 1000;
+          hud_E.alpha = 0.5;
+        } else {
+          // E is on cooldown
+        }
+      },
+      this
+    );
+
+    this.input.keyboard.on(
+      "keydown_R",
+      function (event) {
+        if (rCooldown <= 0 || (rActive > 0 && rCharges > 0)) {
+          if (rCharges == 3) {
+            rActive = 800;
+            rCooldown = 3000;
+          }
+          if (rActive > 0 && rCharges > 0) {
+            rCharges -= 1;
+            saveSpeed = playerSpeed;
+            playerSpeed = maxPlayerSpeed;
+            knightR_Cooldown = 100;
+            knightRActive = true;
+          }
+        } else {
+          // R is on cooldown
+        }
+      },
+      this
+    );
+  }
 
   this.scene.add("info", InfoScene, true);
 }
@@ -440,7 +647,7 @@ function create() {
 // Function is ran every frame to update the game
 function update() {
   playerMove();
-  cooldowns();
+  cooldowns.call(this);
   moveEnemies();
   // this.cameras.main.centerOn(player.x, player.y);
 }
@@ -455,10 +662,61 @@ function cooldowns() {
   rActive -= 1;
   wActive -= 1;
   inv -= 1;
+  knightR_Cooldown -= 1;
+  enemyShootCooldown += 1;
 
+  if (enemyShootCooldown >= 300){
+    enemies.forEach(function (enemy) {
+      if (enemy.shoot){
+        enemyShoot.call(this, enemy);
+      }
+
+    });
+    enemyShootCooldown = 0;
+  }
+
+  // HUD Q
+  if (qCooldown <= 0) {
+    hud_Q.alpha = 1;
+  }
+  // HUD W
+  if (wCooldown <= 0) {
+    hud_W.alpha = 1;
+  }
+  // HUD E
+  if (eCooldown <= 0) {
+    hud_E.alpha = 1;
+  }
+  // HUD R
+  if (rCharges <= 0) {
+    hud_R.alpha = 0.5;
+  }
   if (rCooldown <= 0) {
     rCharges = 3;
+    hud_R.alpha = 1;
   }
+
+  if (knightR_Cooldown <= 0 && knightRActive == true) {
+    playerSpeed = saveSpeed;
+    knightRActive = false;
+  }
+}
+
+function enemyShoot(enemy) {
+  //create the bullet
+  console.log(enemy);
+  const bullet = Scene.physics.add.sprite(
+    enemy.enemy.x,
+    enemy.enemy.y,
+    "bullet"
+  );
+  bullet
+    .enableBody(true, enemy.enemy.x, enemy.enemy.y, true, true);
+
+  Scene.physics.add.overlap(player, bullet, hitPlayer, null, Scene);
+  Scene.physics.moveToObject(bullet, target, 500);
+  Scene.events.emit("fireSound");
+
 }
 
 // Moves the player
@@ -617,6 +875,7 @@ function initVariables() {
   wCooldown = 0;
   eCooldown = 0;
   rCooldown = 0;
+  enemyShootCooldown = 0;
   playerSpeed = 140;
   inv = 30;
   hp = 20;
@@ -664,8 +923,68 @@ function fireballHit(fireball, enemy) {
   }
 }
 
+function swordHit(sword, enemy) {
+  sword.disableBody(true, true);
+  const DistanceBetween = Phaser.Math.Distance.Between;
+
+  const found = enemies.find(function (e) {
+    return e.enemy == enemy;
+  });
+
+  found.hp -= 2;
+
+  //minus 3 health for enemies around
+  for (let i = 0; i < enemies.length; i++) {
+    if (
+      DistanceBetween(
+        sword.x,
+        sword.y,
+        enemies[i].enemy.x,
+        enemies[i].enemy.y
+      ) < 75
+    ) {
+      enemies[i].hp -= qDmg;
+    }
+    checkEnemiesDeath(i);
+  }
+}
+
+function circle_slashHit(sword, enemy) {
+
+  const DistanceBetween = Phaser.Math.Distance.Between;
+
+  const found = enemies.find(function (e) {
+    return e.enemy == enemy;
+  });
+
+  found.hp -= 4;
+
+  //minus health for enemies around
+  for (let i = 0; i < enemies.length; i++) {
+    if (
+      DistanceBetween(
+        sword.x,
+        sword.y,
+        enemies[i].enemy.x,
+        enemies[i].enemy.y
+      ) < 100
+    ) {
+      enemies[i].hp -= 4;
+    }
+    checkEnemiesDeath(i);
+  }
+}
+
+function circle_slashComplete (animation, frame, circle_slash)
+{
+    //  Animation is over, remove circle_slash
+    player.setVelocity(0);
+    circle_slash.disableBody(true, true);
+}
+
 function checkEnemiesDeath(i) {
   let newEnemy;
+  let newOctoEnemy;
   //check if each enemy is dead
   if (enemies[i].hp <= 0) {
     Scene.events.emit("deathSound");
@@ -694,12 +1013,18 @@ function checkEnemiesDeath(i) {
         //spawn left
         else if (i % 4 == 2) {
           newEnemy = addEnemy.call(Scene, 64, getRandomInt(576));
+          newOctoEnemy = addOctoEnemy.call(Scene, 64, getRandomInt(576));
+          enemyCount++;
           Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
+          Scene.physics.add.overlap(player, newOctoEnemy, hitPlayer, null, Scene);
         }
         //spawn right
         else {
           newEnemy = addEnemy.call(Scene, 832, getRandomInt(576));
+          newOctoEnemy = addOctoEnemy.call(Scene, 832, getRandomInt(576));
+          enemyCount++;
           Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
+          Scene.physics.add.overlap(player, newOctoEnemy, hitPlayer, null, Scene);
         }
         if (enemies.length > 1) {
           for (let j = 0; j < enemies.length - 1; j++) {
@@ -767,9 +1092,22 @@ function addEnemy(x, y) {
   enemies.push({
     enemy: enemy,
     hp: waveCount * 2,
-    speed: 50 + waveCount * 2
+    speed: 50 + waveCount * 2,
+    shoot: false
   });
   enemy.anims.play("enemy", true);
+  return enemy;
+}
+
+function addOctoEnemy(x, y) {
+  const enemy = this.physics.add.sprite(x, y, "octoEnemy");
+  enemies.push({
+    enemy: enemy,
+    hp: waveCount * 2,
+    speed: 0,
+    shoot: true
+  });
+  enemy.anims.play("octoEnemy", true);
   return enemy;
 }
 

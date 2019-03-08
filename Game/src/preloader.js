@@ -20,7 +20,22 @@ function preload() {
   this.load.image("grass", "assets/grass.png");
   this.load.image("ground", "assets/sml_rock64.png");
   this.load.image("bullet", "assets/bullet.png");
+  this.load.image("sword", "assets/sword.png");
+  this.load.image("wizardQ", "assets/wizardQ.png");
+  this.load.image("wizardW", "assets/wizardW.png");
+  this.load.image("wizardE", "assets/wizardE.png");
+  this.load.image("wizardR", "assets/wizardR.png");
+  this.load.image("knightQ", "assets/knightQ.png");
+  this.load.image("knightW", "assets/knightW.png");
+  this.load.image("knightE", "assets/knightE.png");
+  this.load.image("knightR", "assets/knightR.png");
+
+
   this.load.spritesheet("enemy", "assets/slime64.png", {
+    frameWidth: 64,
+    frameHeight: 64
+  });
+  this.load.spritesheet("octoEnemy", "assets/octorock.png", {
     frameWidth: 64,
     frameHeight: 64
   });
@@ -33,6 +48,10 @@ function preload() {
     frameWidth: 64,
     frameHeight: 64
   });
+  this.load.spritesheet("playerKnight", "assets/knight.png", {
+    frameWidth: 64,
+    frameHeight: 64
+  });
   this.load.spritesheet("fireball", "assets/fireball.png", {
     frameWidth: 64,
     frameHeight: 64
@@ -40,6 +59,10 @@ function preload() {
   this.load.spritesheet("mine", "assets/mine.png", {
     frameWidth: 64,
     frameHeight: 64
+  });
+  this.load.spritesheet("circle_slash", "assets/circle_slash.png", {
+    frameWidth: 128,
+    frameHeight: 128
   });
 
   this.load.audio('die', 'assets/sounds/die.wav');
