@@ -17,9 +17,36 @@ export const lose = new Phaser.Class({
   },
 
   create: function() {
-    const text = this.add.text(WIDTH / 2.5, HEIGHT / 2.5, "You lose...", {
-      fontSize: "32px"
+    this.add.text(
+      WIDTH / 3,
+      HEIGHT / 3,
+      `You lose...
+Enter your name:`,
+      {
+        fontSize: "32px"
+      }
+    );
+
+    let textEntry = this.add.text(WIDTH / 3, HEIGHT / 2, "", {
+      font: "32px Courier",
+      fill: "#ffff00"
     });
+
+    this.input.keyboard.on("keydown", function(event) {
+      if (textEntry.text.length > 10) {
+        //max length is 10 chars
+        return;
+      }
+      if (event.keyCode === 8 && textEntry.text.length > 0) {
+        textEntry.text = textEntry.text.substr(0, textEntry.text.length - 1);
+      } else if (
+        event.keyCode === 32 ||
+        (event.keyCode >= 48 && event.keyCode < 90)
+      ) {
+        textEntry.text += event.key;
+      }
+    });
+
     let menuButton = this.add
       .sprite(
         this.game.renderer.width - 150,
