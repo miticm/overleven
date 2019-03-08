@@ -422,9 +422,6 @@ function create() {
   this.physics.add.collider(enemy2, enemy);
   this.physics.add.overlap(player, enemy2, hitPlayer, null, this);
 
-  const enemy3 = addOctoEnemy.call(this, 64, 100);
-  this.physics.add.overlap(player, enemy3, hitPlayer, null, this);
-
   // Controls
   controls = this.input.keyboard.createCursorKeys();
 
@@ -714,9 +711,10 @@ function enemyShoot(enemy) {
     "bullet"
   );
   bullet
-    .enableBody(true, enemy.enemy.x, enemy.enemy.y, true, true)
-    .setVelocity(player.x, player.y);
+    .enableBody(true, enemy.enemy.x, enemy.enemy.y, true, true);
+
   Scene.physics.add.overlap(player, bullet, hitPlayer, null, Scene);
+  Scene.physics.moveToObject(bullet, target, 500);
   Scene.events.emit("fireSound");
 
 }
@@ -885,7 +883,7 @@ function initVariables() {
   mouseY = 0;
   moving = false;
   waveCount = 1;
-  enemyCount = 3;
+  enemyCount = 2;
 }
 
 // Adds a block in the game and into the matrix for AI pathing
@@ -986,6 +984,7 @@ function circle_slashComplete (animation, frame, circle_slash)
 
 function checkEnemiesDeath(i) {
   let newEnemy;
+  let newOctoEnemy;
   //check if each enemy is dead
   if (enemies[i].hp <= 0) {
     Scene.events.emit("deathSound");
@@ -1014,12 +1013,18 @@ function checkEnemiesDeath(i) {
         //spawn left
         else if (i % 4 == 2) {
           newEnemy = addEnemy.call(Scene, 64, getRandomInt(576));
+          newOctoEnemy = addOctoEnemy.call(Scene, 64, getRandomInt(576));
+          enemyCount++;
           Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
+          Scene.physics.add.overlap(player, newOctoEnemy, hitPlayer, null, Scene);
         }
         //spawn right
         else {
           newEnemy = addEnemy.call(Scene, 832, getRandomInt(576));
+          newOctoEnemy = addOctoEnemy.call(Scene, 832, getRandomInt(576));
+          enemyCount++;
           Scene.physics.add.overlap(player, newEnemy, hitPlayer, null, Scene);
+          Scene.physics.add.overlap(player, newOctoEnemy, hitPlayer, null, Scene);
         }
         if (enemies.length > 1) {
           for (let j = 0; j < enemies.length - 1; j++) {
