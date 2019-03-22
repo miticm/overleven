@@ -449,7 +449,7 @@ function create() {
   // Wizard Abilities
   if (characterSelected == "player"){
     this.input.keyboard.on(
-      "keydown_Q",
+      "keydown_E",
       function (event) {
         if (qCooldown <= 0) {
           //create the fireball
@@ -502,7 +502,7 @@ function create() {
       this
     );
     this.input.keyboard.on(
-      "keydown_E",
+      "keydown_Q",
       function (event) {
         if (eCooldown <= 0) {
           enemyShootCooldown = -300;
@@ -532,7 +532,6 @@ function create() {
             //make the player stay still
             moving = false;
             Scene.events.emit("portSound");
-            player.setVelocity(0);
           }
         } else {
           // R is on cooldown
@@ -1113,6 +1112,4 @@ function addOctoEnemy(x, y) {
 }
 
 function stopPlayer(player, grounds) {
-  player.x = this.game.renderer.width / 2;
-  player.y = this.game.renderer.height / 2;
 }

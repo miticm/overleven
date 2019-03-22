@@ -112,7 +112,7 @@ export const char_select = new Phaser.Class({
     wizard.on(
         "pointerup",
         function (event) {
-          characterSelected = "player";
+          characterSelected = "playerKnight";
           this.scene.start("game");
           this.scene.stop();
         },
@@ -122,7 +122,7 @@ export const char_select = new Phaser.Class({
     knight.on(
         "pointerup",
         function (event) {
-          characterSelected = "playerKnight";
+          characterSelected = "player";
           this.scene.start("game");
           this.scene.stop();
         },
