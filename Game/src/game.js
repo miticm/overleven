@@ -46,6 +46,8 @@ let mouseX = 0;
 let mouseY = 0;
 let moving = false;
 
+let grounds;
+
 // Declare variables
 // Player related variables
 let player;
@@ -401,7 +403,8 @@ function create() {
   initTerrainMatrix();
 
   // Add grounds
-  const grounds = this.physics.add.staticGroup();
+  grounds = this.physics.add.staticGroup();
+  
 
   addBlock.call(this, grounds, 9, 1);
   addBlock.call(this, grounds, 5, 1);
@@ -411,6 +414,7 @@ function create() {
   addBlock.call(this, grounds, 5, 9);
   addBlock.call(this, grounds, 9, 5);
   addBlock.call(this, grounds, 5, 5);
+  console.log(grounds);
   this.physics.add.collider(player, grounds);
   this.physics.add.overlap(player, grounds, stopPlayer, null, this);
 
@@ -789,7 +793,9 @@ function moveEnemies() {
 // Collision bullet --> ground
 function breakGround(bullet, ground) {
   bullet.disableBody(true, true);
-  ground.disableBody(true, true);
+  for(let i = 0;i < grounds.children.entries.length;i++){
+    grounds.children.entries[i].disableBody(true,true);
+  }
   Scene.events.emit("rockSound");
   const coord = currentBlock(ground.x, ground.y);
   terrainMatrix[coord.x][coord.y] = false;
