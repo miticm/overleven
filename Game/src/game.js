@@ -525,7 +525,7 @@ function create() {
           }
 
           if (rActive > 0 && rCharges > 0) {
-            rCharges -= 1;
+            rCharges += 1;
             player.x = mouse.x;
             player.y = mouse.y;
 
@@ -713,8 +713,12 @@ function enemyShoot(enemy) {
     enemy.enemy.y,
     "bullet"
   );
+
   bullet
     .enableBody(true, enemy.enemy.x, enemy.enemy.y, true, true);
+
+  // set bullet opacity
+  bullet.alpha = 0;
 
   Scene.physics.add.overlap(player, bullet, hitPlayer, null, Scene);
   Scene.physics.moveToObject(bullet, target, 500);
