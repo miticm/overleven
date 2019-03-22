@@ -660,7 +660,6 @@ function cooldowns() {
   cooldown -= 1;
   qCooldown -= 1;
   wCooldown -= 1;
-  eCooldown -= 1;
   rCooldown -= 1;
   eActive -= 1;
   rActive -= 1;
