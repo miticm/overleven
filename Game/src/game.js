@@ -148,7 +148,6 @@ function create() {
 
   pauseButton.on("pointerup", () => {
     this.scene.launch("pause");
-    this.scene.pause("game");
   });
 
   // Add HUD of Abilites
