@@ -22,7 +22,7 @@ export const char_select = new Phaser.Class({
 
   create: function () {
 
-    const text = this.add.text(this.game.renderer.width / 2, HEIGHT / 10,
+    const text = this.add.text(this.game.renderer.width / 2 - 200, HEIGHT / 10,
       "Choose your character", {
       fontSize: "32px"
     });
