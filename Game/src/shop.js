@@ -51,9 +51,6 @@ export const shop = new Phaser.Class({
         fontSize: "32px"
     });
 
-    if(shieldBought == true){
-        text1.setText("SOLD");
-    }
 
     //shield image
     let shield = this.add
@@ -118,7 +115,7 @@ export const shop = new Phaser.Class({
     speed.on(
         "pointerup",
         function (event) {
-            if(gold >= 100){
+            if(gold >= 150){
                 console.log(gold);
                 if(speedBought == false){
                     this.events.emit("goldBySpeed");

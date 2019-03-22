@@ -177,8 +177,6 @@ export class InfoScene extends Phaser.Scene {
     shop.events.on(
       "goldByShield",
       function () {
-        this.gold -= 200;
-        this.maxHealth += 10
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
@@ -208,7 +206,7 @@ export class InfoScene extends Phaser.Scene {
       function() {
         this.gold -= potPrice;
         potPrice += 50;
-        this.hp = this.maxHealth;
+        this.hp = this.maxHealth + 5;
         info.setText(`HP: ${this.hp}\/${this.maxHealth}\nGold: ${this.gold}\nEnemies remaining: ${this.enemiesRemaining}`);
       },
       this
