@@ -1046,7 +1046,7 @@ function checkEnemiesDeath(i) {
 
 function mineTrip(mine, player) {
   let thing = true;
-  if (wActive <= 0) {
+  if (wActive <= 151) {
     mine.anims.play("explode", true);
     if (bombOne) {
       Scene.events.emit("bombSound");
