@@ -505,7 +505,7 @@ function create() {
       "keydown_E",
       function (event) {
         if (eCooldown <= 0) {
-          enemyShootCooldown = -300;
+          enemyShootCooldown = 200;
           eActive = 300;
           eCooldown = 1000;
           hud_E.alpha = 0.5;
