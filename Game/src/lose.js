@@ -69,6 +69,7 @@ Enter your name:`,
     //******************************** */
     menuButton.on("pointerup", () => {
       this.scene.start("menu");
+      location.reload();
     });
     //******************************** */
 
@@ -96,6 +97,7 @@ Enter your name:`,
       "pointerup",
       function() {
         this.scene.start("game");
+        location.reload();
       },
       this
     );

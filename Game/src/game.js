@@ -475,6 +475,7 @@ function create() {
             );
           }
           qCooldown = 100;
+          hud_Q.alpha = 0.5;
         } else {
           // Q is on cooldown
         }
@@ -493,6 +494,7 @@ function create() {
           this.physics.add.overlap(mine, player, mineTrip, null, this);
           wCooldown = 1000;
           wActive = 150;
+          hud_W.alpha = 0.5;
         } else {
           // W is on cooldown
         }
@@ -505,6 +507,7 @@ function create() {
         if (eCooldown <= 0) {
           eActive = 300;
           eCooldown = 1000;
+          hud_E.alpha = 0.5;
         } else {
           // E is on cooldown
         }

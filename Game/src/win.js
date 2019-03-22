@@ -19,7 +19,7 @@ export const win = new Phaser.Class({
     const text = this.add.text(WIDTH / 2, HEIGHT / 2, "You win!", {
       fontSize: "32px"
     });
-    
+
     let menuButton = this.add
       .sprite(
         this.game.renderer.width - 150,
@@ -43,7 +43,7 @@ export const win = new Phaser.Class({
       this.scene.start("menu");
       this.scene.stop('game');
       this.scene.remove('info');
-      //go to next scene
+      location.reload();
     });
     let retryButton = this.add
       .sprite(
@@ -70,6 +70,7 @@ export const win = new Phaser.Class({
         this.scene.start("game");
         enemies = [];
         terrainMatrix = undefined;
+        location.reload();
       },
       this
     );
