@@ -40,11 +40,7 @@ export const pause = new Phaser.Class({
     });
 
     menuButton.on("pointerup", () => {
-      this.scene.stop("game");
-      this.scene.remove("info");
       this.scene.stop("pause");
-      this.scene.start("menu");
-      location.reload();
     });
     let playButton = this.add
       .sprite(
