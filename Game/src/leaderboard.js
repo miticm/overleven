@@ -49,9 +49,6 @@ export const leaderboard = new Phaser.Class({
     });
 
     playButton.on("pointerup", () => {
-      this.scene.stop("leaderboard");
-      this.scene.start("menu");
-      //go to next scene
     });
 
     fetchLeaderboard.call(this);

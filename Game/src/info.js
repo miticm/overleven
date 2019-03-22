@@ -215,11 +215,11 @@ export class InfoScene extends Phaser.Scene {
     sound.on(
       "pointerup",
       function () {
-        if (sound.text == 'Mute') {
-          sound.setText('Unmute');
+        if (sound.text == 'Unmute') {
+          sound.setText('Mute');
           muted = true;
         } else {
-          sound.setText('Mute');
+          sound.setText('Unmute');
           muted = false;
         }
       }
