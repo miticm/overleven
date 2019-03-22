@@ -52,7 +52,7 @@ export const menu = new Phaser.Class({
 
     playButton.on("pointerup", () => {
       this.scene.stop("menu");
-      this.scene.start("char_select");
+      this.scene.start("leaderboard");
       //go to next scene
     });
 
@@ -78,7 +78,7 @@ export const menu = new Phaser.Class({
     leaderboardButton.on("pointerup", () => {
       //go to leaderboard page
       this.scene.stop("menu");
-      this.scene.start("leaderboard");
+      this.scene.start("char_select");
     });
   }
 });
