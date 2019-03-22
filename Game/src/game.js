@@ -592,7 +592,7 @@ function create() {
           for (let i = 0; i < enemies.length; i++) {
             this.physics.add.overlap(
               circle_slash,
-              enemies[i].enemy,
+               null,
               circle_slashHit,
               null,
               this
