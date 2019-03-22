@@ -844,12 +844,9 @@ function increaseHealth(player, item) {
   item.disableBody(true, true);
   if (hp < maxHealth) {
     if (hp >= maxHealth - 5) {
-      console.log(hp);
-      console.log(maxHealth);
-      hp = maxHealth;
-      console.log(hp);
+
     } else {
-      hp += 5;
+      hp += 0;
     }
     Scene.events.emit("increaseHP");
   }
