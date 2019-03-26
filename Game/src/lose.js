@@ -1,7 +1,7 @@
 // Lose scene
 import "phaser";
 import { WIDTH, HEIGHT } from "./constants.js";
-import { game } from "./game";
+import { gold } from "./game";
 
 export const lose = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -31,6 +31,12 @@ Enter your name:`,
       font: "32px Courier",
       fill: "#ffff00"
     });
+
+    let submit = this.add.text(WIDTH / 2 - 50, this.game.renderer.height - 100, 'Submit score', {
+      font: "22px Arial",
+      fill: "#fff000"
+    });
+    submit.setInteractive();
 
     this.input.keyboard.on("keydown", function(event) {
       if (textEntry.text.length > 10) {
@@ -102,5 +108,15 @@ Enter your name:`,
       this
     );
     //******************************** */
+
+    submit.on(
+      "pointerup",
+      function () {
+        if (textEntry.text != undefined && textEntry.text != null) {
+          firebase.database().ref('leaderboard/' + textEntry.text + '-' + Math.floor(Math.random() * Math.floor(10000))).set(gold);
+        }
+        submit.text = 'Score submitted!';
+      }
+    )
   }
 });
