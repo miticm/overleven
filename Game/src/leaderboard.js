@@ -84,7 +84,7 @@ function fetchLeaderboard() {
         if (i >= LEADERBOARD_NUM) {
           break;
         }
-        texts[i].setText(`${keys[i]}: ${names[keys[i]]}`);
+        texts[i].setText(`${keys[i].split('-')[0]}: ${names[keys[i]]}`);
       }
     });
 }

@@ -113,7 +113,7 @@ Enter your name:`,
       "pointerup",
       function () {
         if (textEntry.text != undefined && textEntry.text != null) {
-          firebase.database().ref('leaderboard/' + textEntry.text).set(gold);
+          firebase.database().ref('leaderboard/' + textEntry.text + '-' + Math.floor(Math.random() * Math.floor(10000))).set(gold);
         }
       }
     )
