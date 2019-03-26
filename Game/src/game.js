@@ -46,6 +46,8 @@ let mouseX = 0;
 let mouseY = 0;
 let moving = false;
 
+let grounds;
+
 // Declare variables
 // Player related variables
 let player;
@@ -148,7 +150,6 @@ function create() {
 
   pauseButton.on("pointerup", () => {
     this.scene.launch("pause");
-    this.scene.pause("game");
   });
 
   // Add HUD of Abilites
@@ -401,7 +402,8 @@ function create() {
   initTerrainMatrix();
 
   // Add grounds
-  const grounds = this.physics.add.staticGroup();
+  grounds = this.physics.add.staticGroup();
+  
 
   addBlock.call(this, grounds, 9, 1);
   addBlock.call(this, grounds, 5, 1);
@@ -411,6 +413,7 @@ function create() {
   addBlock.call(this, grounds, 5, 9);
   addBlock.call(this, grounds, 9, 5);
   addBlock.call(this, grounds, 5, 5);
+  console.log(grounds);
   this.physics.add.collider(player, grounds);
   this.physics.add.overlap(player, grounds, stopPlayer, null, this);
 
@@ -505,7 +508,7 @@ function create() {
       "keydown_Q",
       function (event) {
         if (eCooldown <= 0) {
-          enemyShootCooldown = -300;
+          enemyShootCooldown = 200;
           eActive = 300;
           eCooldown = 1000;
           hud_E.alpha = 0.5;
@@ -525,7 +528,7 @@ function create() {
           }
 
           if (rActive > 0 && rCharges > 0) {
-            rCharges -= 1;
+            rCharges += 1;
             player.x = mouse.x;
             player.y = mouse.y;
 
@@ -592,7 +595,7 @@ function create() {
           for (let i = 0; i < enemies.length; i++) {
             this.physics.add.overlap(
               circle_slash,
-              enemies[i].enemy,
+               null,
               circle_slashHit,
               null,
               this
@@ -659,7 +662,6 @@ function cooldowns() {
   cooldown -= 1;
   qCooldown -= 1;
   wCooldown -= 1;
-  eCooldown -= 1;
   rCooldown -= 1;
   eActive -= 1;
   rActive -= 1;
@@ -713,8 +715,12 @@ function enemyShoot(enemy) {
     enemy.enemy.y,
     "bullet"
   );
+
   bullet
     .enableBody(true, enemy.enemy.x, enemy.enemy.y, true, true);
+
+  // set bullet opacity
+  bullet.alpha = 0;
 
   Scene.physics.add.overlap(player, bullet, hitPlayer, null, Scene);
   Scene.physics.moveToObject(bullet, target, 500);
@@ -789,7 +795,9 @@ function moveEnemies() {
 // Collision bullet --> ground
 function breakGround(bullet, ground) {
   bullet.disableBody(true, true);
-  ground.disableBody(true, true);
+  for(let i = 0;i < grounds.children.entries.length;i++){
+    grounds.children.entries[i].disableBody(true,true);
+  }
   Scene.events.emit("rockSound");
   const coord = currentBlock(ground.x, ground.y);
   terrainMatrix[coord.x][coord.y] = false;
@@ -843,12 +851,9 @@ function increaseHealth(player, item) {
   item.disableBody(true, true);
   if (hp < maxHealth) {
     if (hp >= maxHealth - 5) {
-      console.log(hp);
-      console.log(maxHealth);
-      hp = maxHealth;
-      console.log(hp);
+
     } else {
-      hp += 5;
+      hp += 0;
     }
     Scene.events.emit("increaseHP");
   }
@@ -1046,7 +1051,7 @@ function checkEnemiesDeath(i) {
 
 function mineTrip(mine, player) {
   let thing = true;
-  if (wActive <= 0) {
+  if (wActive <= 151) {
     mine.anims.play("explode", true);
     if (bombOne) {
       Scene.events.emit("bombSound");
