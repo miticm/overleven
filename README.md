@@ -1,4 +1,4 @@
-# CS408-Project
+# A phaser game developed by
 
 * Trevor Neidlinger
 * Dan Hipskind
